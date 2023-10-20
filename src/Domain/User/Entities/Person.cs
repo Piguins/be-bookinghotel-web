@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Primitives;
+using Domain.Common.Primitives;
+using Domain.User.ValuedObjects;
 
-namespace Domain.Person;
-public class Person : Entity
+namespace Domain.User.Entities;
+public class Person : Entity<UserId>
 {
-    public Person(Guid id) : base(id)
+    public Person(UserId id) : base(id)
     {
     }
 
