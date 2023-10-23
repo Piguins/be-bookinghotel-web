@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Guest\Entities\" />
+    <Folder Include="Host\Entities\" />
+  </ItemGroup>
+
 </Project>
