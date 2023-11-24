@@ -1,24 +1,26 @@
 ﻿using Domain.Common.Primitives;
-using Domain.Guest.ValueObjects;
-using Domain.Host.ValueObjects;
-using Domain.User.Entities;
 using Domain.User.ValueObjects;
+using Domain.UserInfo.ValueObjects;
 
 namespace Domain.User;
+
 public class User : AggregateRoot<UserId>
 {
     public User(UserId id,
-                Person person,
-                HostId hostId,
-                GuestId guestId) : base(id)
+                string email,
+                string password,
+                UserInfoId userInfoId) : base(id)
     {
-        Person = person;
-        HostId = hostId;
-        GuestId = guestId;
+        Email = email;
+        Password = password;
+        UserInfoId = userInfoId;
     }
 
-    public Person Person { get; }
-    public HostId HostId { get; }
-    public GuestId GuestId { get; }
+    public string Email { get; private set; }
+    public string Password { get; private set; }
+    public UserInfoId UserInfoId { get; private set; }
 
+    // #pragma warning disable CS8618
+    //     private User() { }
+    // #pragma warning restore CS8618
 }
