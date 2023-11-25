@@ -1,34 +1,32 @@
 using Domain.Common.Primitives;
 using Domain.Common.ValueObjects;
-using Domain.Rent.ValueObjects;
-using Domain.Room.ValueObjects;
+using Domain.Bill.ValueObjects;
 using Domain.User.ValueObjects;
+using Domain.Rent.ValueObjects;
 
-namespace Domain.Rent;
+namespace Domain.Bill;
 
-public sealed class Rent : AggregateRoot<RentId>
+public sealed class Bill : AggregateRoot<BillId>
 {
-    public Rent(RentId id,
-                RoomId roomId,
+    private readonly List<RentId> _rentIds = new();
+
+    public Bill(BillId id,
                 UserId hostId,
                 UserId guestId,
-                DateTime atDate,
-                Money pricePerDay) : base(id)
+                DateTime atDate) : base(id)
     {
-        RoomId = roomId;
         HostId = hostId;
         GuestId = guestId;
         AtDate = atDate;
-        PricePerDay = pricePerDay;
     }
 
-    public RoomId RoomId { get; private set; }
     public UserId HostId { get; private set; }
     public UserId GuestId { get; private set; }
     public DateTime AtDate { get; private set; }
-    public Money PricePerDay { get; private set; }
+    public Money TotalPrice { get; private set; } = Money.VND;
+    public IReadOnlyList<RentId> RentIds => _rentIds.AsReadOnly();
 
     // #pragma warning disable CS8618
-    //     private Rent() { }
+    //     private Bill() { }
     // #pragma warning restore CS8618
 }
