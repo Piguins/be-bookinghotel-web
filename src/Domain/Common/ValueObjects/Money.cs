@@ -4,7 +4,21 @@ namespace Domain.Common.ValueObjects;
 
 public sealed class Money : ValueObject
 {
-    public string Currency { get; set; } = string.Empty;
+    public static Money USD => new("USD", 0);
+    public static Money VND => new("VND", 0);
 
-    public override IEnumerable<object> GetAtomicValues() => throw new NotImplementedException();
+    private Money(string currency, decimal amount)
+    {
+        Currency = currency;
+        Amount = amount;
+    }
+
+    public string Currency { get; private set; }
+    public decimal Amount { get; private set; }
+
+    public override IEnumerable<object> GetAtomicValues()
+    {
+        yield return Currency;
+        yield return Amount;
+    }
 }
