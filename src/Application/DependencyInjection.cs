@@ -1,4 +1,7 @@
+using Application.Authentication;
+using Application.Behaviors;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -7,13 +10,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        var assembly = typeof(DependencyInjection).Assembly;
-
         services.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssembly(assembly);
+            config.RegisterServicesFromAssembly(ApplicationAssembly.Assembly);
         });
-        services.AddValidatorsFromAssembly(assembly);
+        services.AddValidatorsFromAssembly(ApplicationAssembly.Assembly);
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
+        services.AddScoped(typeof(IAuthenticationService), typeof(AuthenticationService));
 
         return services;
     }
