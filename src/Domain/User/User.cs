@@ -1,4 +1,4 @@
-﻿using Domain.Common.Primitives;
+using Domain.Common.Primitives;
 using Domain.Common.ValueObjects;
 using Domain.User.Enums;
 using Domain.User.ValueObjects;
