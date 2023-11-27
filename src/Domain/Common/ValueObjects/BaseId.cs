@@ -16,7 +16,7 @@ public abstract class BaseId : ValueObject
         yield return Value;
     }
 
-    protected static Guid Create() => Guid.NewGuid();
+    public static Guid NewId => Guid.NewGuid();
 
 }
 

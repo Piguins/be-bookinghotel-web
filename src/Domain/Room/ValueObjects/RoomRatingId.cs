@@ -8,5 +8,5 @@ public class RoomRatingId : BaseId
     {
     }
 
-    public static new RoomRatingId Create() => new(BaseId.Create());
+    public static RoomRatingId Create(Guid value) => new(value);
 }

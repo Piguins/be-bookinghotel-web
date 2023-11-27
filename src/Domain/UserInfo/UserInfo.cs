@@ -6,18 +6,15 @@ namespace Domain.UserInfo;
 public class UserInfo : Entity<UserInfoId>
 {
     public UserInfo(UserInfoId id,
-                  string firstName,
-                  string lastName,
-                  string country) : base(id)
+                  string country,
+                  string phoneNo) : base(id)
     {
-        FirstName = firstName;
-        LastName = lastName;
         Country = country;
+        PhoneNo = phoneNo;
     }
 
-    public string FirstName { get; private set; }
-    public string LastName { get; private set; }
     public string Country { get; private set; }
+    public string PhoneNo { get; private set; }
 
     // #pragma warning disable CS8618
     //     private Person() { }
