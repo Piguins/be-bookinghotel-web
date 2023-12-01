@@ -1,8 +1,9 @@
-using Serilog;
 using Application;
 using Infrastructure;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
 {
     // Add services to the container.
     builder.Services.AddControllers();
@@ -13,22 +14,30 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddApplication().AddInfrastructure(builder.Configuration);
 
-    builder.Host.UseSerilog((context, configuration) =>
-        configuration.ReadFrom.Configuration(context.Configuration));
+    builder
+        .Host
+        .UseSerilog(
+            (context, configuration) => configuration.ReadFrom.Configuration(context.Configuration)
+        );
 }
 
 var app = builder.Build();
+
 {
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        _ = app.UseSwagger();
-        _ = app.UseSwaggerUI();
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        app.Logger.LogInformation("Using Environment: {Environment}", "Development");
     }
     app.UseExceptionHandler("/errors");
     app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
+
+    app.Logger.LogInformation("Running on Port: {Port}", 5000);
     app.Run();
 }

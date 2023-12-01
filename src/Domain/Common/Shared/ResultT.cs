@@ -17,9 +17,8 @@ public class Result<TValue> : Result
                 "The value of a failure result can not be accessed"
             );
 
-    // public static implicit operator Result<TValue>(TValue? value)
-    // {
-    //     // return Create(value);
-    //     return new();
-    // }
+    public static implicit operator Result<TValue>(TValue? value)
+    {
+        return new(true, BaseError.None, value);
+    }
 }
