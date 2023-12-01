@@ -26,6 +26,7 @@ public sealed class Rent : AggregateRoot<RentId>
     public UserId HostId { get; private set; }
     public UserId GuestId { get; private set; }
     public DateTime AtDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
     public Money PricePerDay { get; private set; }
 
     // #pragma warning disable CS8618
