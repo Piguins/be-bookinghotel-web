@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Services.Authentication;
-using Application.Authentication;
 using Application.Abstractions.Commons;
 using Infrastructure.Services.Commons;
-using Application.Abstractions.Persistence;
 using Infrastructure.Services.Repositories;
+using Application.Users.Auth;
+using Application.Users;
 
 namespace Infrastructure;
 
