@@ -4,8 +4,8 @@ namespace Domain.Common.ValueObjects;
 
 public sealed class Money : ValueObject
 {
-    public static Money USD => new("USD", 0);
-    public static Money VND => new("VND", 0);
+    public static Money Usd => new("USD", 0);
+    public static Money Vnd => new("VND", 0);
 
     private Money(string currency, decimal amount)
     {

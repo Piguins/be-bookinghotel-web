@@ -4,8 +4,8 @@ namespace Domain.RoomType.Enums;
 
 public abstract class Floor : Enumeration<Floor>
 {
-    public static readonly Floor FB = new FloorB();
-    public static readonly Floor FG = new FloorG();
+    public static readonly Floor Fb = new FloorB();
+    public static readonly Floor Fg = new FloorG();
     public static readonly Floor F1 = new Floor1();
     public static readonly Floor F2 = new Floor2();
 
@@ -38,4 +38,3 @@ public abstract class Floor : Enumeration<Floor>
         }
     }
 }
-
