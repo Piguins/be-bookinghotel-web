@@ -83,6 +83,9 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 
 # Variable preferences
 dotnet_diagnostic.CA1711.severity = none
+dotnet_diagnostic.CA2254.severity = none
+dotnet_diagnostic.CA1848.severity = none
+
 #### C# Coding Conventions ####
 [*.cs]
 

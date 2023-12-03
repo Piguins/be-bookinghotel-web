@@ -23,7 +23,7 @@ public sealed class Bill : AggregateRoot<BillId>
     public UserId HostId { get; private set; }
     public UserId GuestId { get; private set; }
     public DateTime AtDate { get; private set; }
-    public Money TotalPrice { get; private set; } = Money.VND;
+    public Money TotalPrice { get; private set; } = Money.Vnd;
     public IReadOnlyList<RentId> RentIds => _rentIds.AsReadOnly();
 
     // #pragma warning disable CS8618

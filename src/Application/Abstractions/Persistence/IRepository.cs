@@ -1,4 +1,4 @@
-﻿using Domain.Common.Primitives;
+using Domain.Common.Primitives;
 using Domain.Common.ValueObjects;
 
 namespace Application.Abstractions.Persistence;

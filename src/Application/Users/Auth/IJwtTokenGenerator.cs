@@ -1,6 +1,6 @@
 using Domain.User;
 
-namespace Application.Authentication;
+namespace Application.Users.Auth;
 
 public interface IJwtTokenGenerator
 {

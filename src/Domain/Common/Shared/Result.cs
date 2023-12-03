@@ -1,12 +1,14 @@
+using Domain.Common.Exceptions;
+
 namespace Domain.Common.Shared;
 
 public class Result
 {
-    protected internal Result(bool isSuccess, BaseError error)
+    protected internal Result(bool isSuccess, Error error)
     {
         if (
-            (isSuccess && error != BaseError.None)
-            || (!isSuccess && error == BaseError.None)
+            (isSuccess && error != Error.None)
+            || (!isSuccess && error == Error.None)
         )
         {
             throw new InvalidOperationException();
@@ -18,8 +20,8 @@ public class Result
 
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
-    public BaseError Error { get; }
+    public Error Error { get; }
 
-    public static Result Success() => new(true, BaseError.None);
-    public static Result Failure(BaseError error) => new(true, error);
+    public static Result Success() => new(true, Error.None);
+    public static Result Failure(Error error) => new(true, error);
 }
