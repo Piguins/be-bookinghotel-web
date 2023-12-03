@@ -16,11 +16,11 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var result = Sender.Send(new LoginCommand(request.Email, request.Password)).Result;
+        var result = _sender.Send(new LoginCommand(request.Email, request.Password)).Result;
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return HandleFailure(result);
         }
 
         var response = new AuthenticationResponse(
@@ -36,7 +36,7 @@ public class AuthenticationController : ApiController
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest request)
     {
-        var result = Sender
+        var result = _sender
             .Send(new RegisterCommand(
                     request.Email,
                     request.Password,
@@ -44,6 +44,11 @@ public class AuthenticationController : ApiController
                     request.LastName
                 )
             ).Result;
+
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
 
         var response = new AuthenticationResponse(
             result.Value.User.Id.Value,
