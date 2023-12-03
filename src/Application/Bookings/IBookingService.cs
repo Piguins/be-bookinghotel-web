@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Domain.Booking;
 using Domain.User.ValueObjects;
 
-namespace Application.BookingManagement;
+namespace Application.Bookings;
 public interface IBookingService
 {
-    BookingResult CreateBooking(
-    string userId,
-    string roomTypeId,
-    string fromDate,
-    string toDate,
-    string roomCount);
+    public Task<BookingResult> CreateBooking(
+    Guid userId,
+    Guid roomTypeId,
+    DateTime fromDate,
+    DateTime toDate,
+    int roomCount);
     BookingResult CancellBooking(Booking booking);
     BookingResult ChangeBooking(UserId userId, Booking booking);
 }

@@ -1,6 +1,7 @@
 using Domain.Booking.Enums;
 using Domain.Booking.ValueObjects;
 using Domain.Common.Primitives;
+using Domain.Common.ValueObjects;
 using Domain.RoomType.ValueObjects;
 using Domain.User.ValueObjects;
 
@@ -13,7 +14,7 @@ public class Booking : AggregateRoot<BookingId>
                    RoomTypeId roomTypeId,
                    DateTime fromDate,
                    DateTime toDate,
-                   uint roomCount) : base(bookingId)
+                   int roomCount) : base(bookingId)
     {
         UserId = userId;
         RoomTypeId = roomTypeId;
@@ -26,6 +27,17 @@ public class Booking : AggregateRoot<BookingId>
     public RoomTypeId RoomTypeId { get; set; }
     public DateTime FromDate { get; set; }
     public DateTime EndDate { get; set; }
-    public uint RoomCount { get; set; } = 1;
+    public int RoomCount { get; set; } = 1;
     public BookingStatus BookingStatus { get; set; } = BookingStatus.Created;
+
+    public static Booking Create(
+        UserId userId,
+        RoomTypeId roomTypeId,
+        DateTime fromDate,
+        DateTime toDate,
+        int roomCount)
+    {
+        var booking = new Booking(BookingId.Create(BaseId.NewId), userId, roomTypeId, fromDate, toDate, roomCount);
+        return booking;
+    }
 }

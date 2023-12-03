@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Contracts.BookingManagement;
 
 public record CreateBookingRequest(
-    string UserId,
-    string RoomTypeId,
-    string FromDate,
-    string ToDate,
-    string RoomCount)
+    Guid UserId,
+    Guid RoomTypeId,
+    DateTime FromDate,
+    DateTime ToDate,
+    int RoomCount);

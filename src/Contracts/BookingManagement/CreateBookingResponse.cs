@@ -5,4 +5,4 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Contracts.BookingManagement;
-public record CreateBookingResponse(string UserId)
+public record CreateBookingResponse(Guid BookingId);

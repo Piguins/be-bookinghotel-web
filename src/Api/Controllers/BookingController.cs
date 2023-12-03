@@ -1,5 +1,5 @@
 ﻿using Api.Abstractions;
-using Application.BookingManagement;
+using Application.Bookings;
 using Contracts.BookingManagement;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Api.Controllers;
 
-[Authorize]
-[Route("user/{UserId}/booking")]
+[Route("booking")]
 public class BookingController : ApiController
 {
+
     private readonly IBookingService _bookingService;
     public BookingController(ISender sender, IBookingService bookingService) : base(sender)
     {
@@ -27,6 +27,8 @@ public class BookingController : ApiController
             request.FromDate,
             request.ToDate,
             request.RoomCount);
+
+        var response = new CreateBookingResponse(result.Result.Booking.Id.Value);
 
         return Ok(response);
     }
