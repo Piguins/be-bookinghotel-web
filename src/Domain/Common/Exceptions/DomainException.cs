@@ -1,7 +1,5 @@
 namespace Domain.Common.Exceptions;
 
-public abstract class DomainException : Exception
+public static partial class DomainException
 {
-    protected DomainException(string exception)
-        : base(exception) { }
 }
