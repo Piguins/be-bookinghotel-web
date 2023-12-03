@@ -45,5 +45,5 @@ public class Error : IEquatable<Error>
         && obj is Error entity
         && entity.Code == Code;
 
-    public override int GetHashCode() => throw new NotImplementedException();
+    public override int GetHashCode() => HashCode.Combine(Code);
 }
