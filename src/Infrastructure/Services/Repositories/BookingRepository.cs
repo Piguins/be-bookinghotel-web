@@ -25,5 +25,19 @@ public class BookingRepository : IBookingRepository
             return Bookings.FirstOrDefault(booking => booking.Id.Equals(id));
         });
     }
-    public Task<Booking> UpdateAsync(Booking aggregate) => throw new NotImplementedException();
+    public Task<Booking?> UpdateAsync(Booking aggregate)
+    {
+        return Task.Run(() =>
+        {
+            var booking = Bookings.FirstOrDefault(booking => booking.Id.Equals(aggregate.Id));
+            if(booking != null)
+            {
+                booking.RoomTypeId = aggregate.RoomTypeId;
+                booking.FromDate = aggregate.FromDate;
+                booking.EndDate = aggregate.EndDate;
+                booking.RoomCount = aggregate.RoomCount;
+            }
+            return booking;
+        });
+    }
 }

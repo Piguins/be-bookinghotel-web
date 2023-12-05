@@ -6,6 +6,8 @@ using Infrastructure.Services.Commons;
 using Infrastructure.Services.Repositories;
 using Application.Users.Auth;
 using Application.Users;
+using Application.Bookings;
+using Application.RoomTypes;
 
 namespace Infrastructure;
 
@@ -38,6 +40,8 @@ public static class DependencyInjection
     private static IServiceCollection AddPersistence(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
         return services;
     }
 }
