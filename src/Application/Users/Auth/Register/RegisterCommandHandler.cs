@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Domain.Common.Shared;
 using Domain.User;
+using Domain.User.Exceptions;
 
 namespace Application.Users.Auth.Register;
 
@@ -13,7 +14,7 @@ internal sealed class RegisterCommandHandler(
     {
         if (await userRepository.GetByEmailAsync(request.Email) is not null)
         {
-            throw new InvalidOperationException("User already exists");
+            return (Result<AuthenticationResult>)Result.Failure(DomainException.User.EmailAlreadyExists);
         }
 
         var user = User.Create(
@@ -21,12 +22,9 @@ internal sealed class RegisterCommandHandler(
             request.Password,
             request.FirstName,
             request.LastName);
-        var add = userRepository.AddAsync(user);
+        await userRepository.AddAsync(user);
 
         string token = jwtTokenGenerator.GenerateToken(user);
-
-        Task.WaitAll(new Task[] { add },
-                     cancellationToken);
 
         return new AuthenticationResult(user, token);
     }

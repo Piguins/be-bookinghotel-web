@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Domain.Common.Shared;
 using Domain.User;
+using Domain.User.Exceptions;
 
 namespace Application.Users.Auth.Login;
 
@@ -13,11 +14,11 @@ internal sealed class LoginCommandHandler(
     {
         if (await userRepository.GetByEmailAsync(request.Email) is not User user)
         {
-            throw new InvalidOperationException("User does not exist");
+            return (Result<AuthenticationResult>)Result.Failure(DomainException.User.UserNotFound);
         }
         if (!user.Password.Equals(request.Password, StringComparison.Ordinal))
         {
-            throw new InvalidOperationException("Invalid password");
+            return (Result<AuthenticationResult>)Result.Failure(DomainException.User.WrongPassword);
         }
 
         string token = jwtTokenGenerator.GenerateToken(user);

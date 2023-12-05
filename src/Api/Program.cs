@@ -1,3 +1,4 @@
+using Api.Exception;
 using Application;
 using Infrastructure;
 using Serilog;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddApplication().AddInfrastructure(builder.Configuration);
+
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
 
     builder
         .Host
