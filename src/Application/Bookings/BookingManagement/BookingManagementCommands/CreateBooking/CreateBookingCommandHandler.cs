@@ -4,50 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Abstractions.Messaging;
-using Application.Bookings.BookingManagement;
 using Application.RoomTypes;
 using Application.Users;
 using Domain.Booking;
-using Domain.Booking.ValueObjects;
 using Domain.Common.Shared;
 using Domain.RoomType;
 using Domain.RoomType.ValueObjects;
 using Domain.User;
 using Domain.User.ValueObjects;
 
-namespace Application.Bookings.BookingManagement.UpdateBooking;
-internal sealed class UpdateBookingCommandHandler(
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.CreateBooking;
+internal sealed class CreateBookingCommandHandler(
     IBookingRepository bookingRepository,
     IUserRepository userRepository,
-    IRoomTypeRepository roomTypeRepository) : ICommandHandler<UpdateBookingCommand, BookingResult>
+    IRoomTypeRepository roomTypeRepository) : ICommandHandler<CreateBookingCommand, BookingCommandResult>
 {
-    public async Task<Result<BookingResult>> Handle(UpdateBookingCommand request, CancellationToken cancellationToken)
+    public async Task<Result<BookingCommandResult>> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
         var realUserId = UserId.Create(request.UserId);
-        if (await userRepository.GetByIdAsync(realUserId) is null)
+        if (await userRepository.GetByIdAsync(realUserId) is not User)
         {
             throw new InvalidOperationException("User doesn't exist");
         }
 
         var realRoomTypeId = RoomTypeId.Create(request.RoomTypeId);
-        if (await roomTypeRepository.GetByIdAsync(realRoomTypeId) is null)
+        if (await roomTypeRepository.GetByIdAsync(realRoomTypeId) is not RoomType)
         {
             throw new InvalidOperationException("RoomType doesn't exist");
         }
 
-        var realBookingValue = BookingId.Create(request.BookingId);
-        if (await bookingRepository.GetByIdAsync(realBookingValue) is null)
-        {
-            throw new InvalidOperationException("Booking doesn't exist");
-        }
-
         var booking = Booking.Create(realUserId, realRoomTypeId, request.FromDate, request.ToDate, request.RoomCount);
 
-        var update = bookingRepository.UpdateAsync(booking);
+        var add = bookingRepository.AddAsync(booking);
 
-        Task.WaitAll(new Task[] { update },
+        Task.WaitAll(new Task[] { add },
                      cancellationToken);
 
-        return new BookingResult(booking);
+        return new BookingCommandResult(booking);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Booking;
 using Domain.Booking.ValueObjects;
+using Domain.User.ValueObjects;
 
 namespace Infrastructure.Persistence.Repositories;
 public class BookingRepository : IBookingRepository
@@ -12,6 +13,14 @@ public class BookingRepository : IBookingRepository
     });
     public Task DeleteAsync(BookingId id) => throw new NotImplementedException();
     public Task<IEnumerable<Booking>> GetAllAsync() => throw new NotImplementedException();
+    public Task<List<Booking>> GetByUserIdAsync(Guid userId)
+    {
+        return Task.Run(() =>
+        {
+            var result = Bookings.FindAll(x => x.UserId.Equals(UserId.Create(userId)));
+            return result;
+        });
+    }
     public Task<Booking?> GetByIdAsync(BookingId id)
     {
         return Task.Run(() =>

@@ -2,4 +2,4 @@
 
 namespace Application.Bookings.BookingManagement;
 
-public record BookingResult(Booking Booking);
+public record BookingQueryResult(List<Booking> Bookings);

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Abstractions.Messaging;
-using Application.Bookings.BookingManagement;
 using MediatR;
 
-namespace Application.Bookings.BookingManagement.CancelBooking;
-public record CancelBookingCommand(
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.ConfirmBooking;
+public record ConfirmBookingCommand(
     Guid BookingId,
-    Guid UserId) : ICommand<BookingResult>;
+    Guid UserId) : ICommand<BookingCommandResult>;

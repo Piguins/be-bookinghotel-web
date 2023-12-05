@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.BookingManagement;
+namespace Contracts.BookingManagement.Commands;
 public record UpdateBookingRequest(
     Guid UserId,
     Guid BookingId,

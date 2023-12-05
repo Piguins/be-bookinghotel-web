@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace Application.Bookings.BookingManagement.UpdateBooking;
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.UpdateBooking;
 public class UpdateBookingCommandValidator : AbstractValidator<UpdateBookingCommand>
 {
     public UpdateBookingCommandValidator()

@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.BookingManagement;
-
-public record ConfirmBookingRequest(
+namespace Contracts.BookingManagement.Commands;
+public record CancelBookingRequest(
     Guid BookingId,
     Guid UserId);
