@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Abstractions.Messaging;
-using Application.Bookings.BookingManagement;
 using Application.RoomTypes;
 using Application.Users;
 using Domain.Booking;
@@ -20,27 +19,27 @@ using Domain.User.Exceptions;
 using Domain.User.ValueObjects;
 using DomainException = Domain.User.Exceptions.DomainException;
 
-namespace Application.Bookings.BookingManagement.CreateBooking;
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.ConfirmBooking;
 internal sealed class ConfirmBookingCommandHandler(
     IBookingRepository bookingRepository,
-    IUserRepository userRepository) : ICommandHandler<ConfirmBookingCommand, BookingResult>
+    IUserRepository userRepository) : ICommandHandler<ConfirmBookingCommand, BookingCommandResult>
 {
-    public async Task<Result<BookingResult>> Handle(ConfirmBookingCommand request, CancellationToken cancellationToken)
+    public async Task<Result<BookingCommandResult>> Handle(ConfirmBookingCommand request, CancellationToken cancellationToken)
     {
         var booking = await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId));
         if (booking is null)
         {
-            return (Result<BookingResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
+            return (Result<BookingCommandResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
         }
 
         var user = await userRepository.GetByIdAsync(UserId.Create(request.UserId));
         if (user is null)
         {
-            return (Result<BookingResult>)Result.Failure(DomainException.User.UserNotFound);
+            return (Result<BookingCommandResult>)Result.Failure(DomainException.User.UserNotFound);
         }
-        if(user.Roles != Role.Host)
+        if (user.Roles != Role.Host)
         {
-            return (Result<BookingResult>)Result.Failure(DomainException.User.InvalidCredentials);
+            return (Result<BookingCommandResult>)Result.Failure(DomainException.User.InvalidCredentials);
         }
 
         booking.BookingStatus = BookingStatus.Confirmed;
@@ -50,6 +49,6 @@ internal sealed class ConfirmBookingCommandHandler(
         Task.WaitAll(new Task[] { updatestatus },
                      cancellationToken);
 
-        return new BookingResult(booking);
+        return new BookingCommandResult(booking);
     }
 }

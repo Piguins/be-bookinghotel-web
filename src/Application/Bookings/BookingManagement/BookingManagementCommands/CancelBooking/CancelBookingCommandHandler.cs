@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Abstractions.Messaging;
-using Application.Bookings.BookingManagement;
-using Application.Bookings.BookingManagement.CancelBooking;
 using Application.RoomTypes;
 using Application.Users;
 using Domain.Booking;
@@ -21,23 +19,23 @@ using Domain.User.Exceptions;
 using Domain.User.ValueObjects;
 using DomainException = Domain.User.Exceptions.DomainException;
 
-namespace Application.Bookings.BookingManagement.CreateBooking;
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.CancelBooking;
 internal sealed class CancelBookingCommandHandler(
     IBookingRepository bookingRepository,
-    IUserRepository userRepository) : ICommandHandler<CancelBookingCommand, BookingResult>
+    IUserRepository userRepository) : ICommandHandler<CancelBookingCommand, BookingCommandResult>
 {
-    public async Task<Result<BookingResult>> Handle(CancelBookingCommand request, CancellationToken cancellationToken)
+    public async Task<Result<BookingCommandResult>> Handle(CancelBookingCommand request, CancellationToken cancellationToken)
     {
         var booking = await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId));
         if (booking is null)
         {
-            return (Result<BookingResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
+            return (Result<BookingCommandResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
         }
 
         var user = await userRepository.GetByIdAsync(UserId.Create(request.UserId));
         if (user is null)
         {
-            return (Result<BookingResult>)Result.Failure(DomainException.User.UserNotFound);
+            return (Result<BookingCommandResult>)Result.Failure(DomainException.User.UserNotFound);
         }
 
         booking.BookingStatus = BookingStatus.Cancelled;
@@ -47,6 +45,6 @@ internal sealed class CancelBookingCommandHandler(
         Task.WaitAll(new Task[] { updatestatus },
                      cancellationToken);
 
-        return new BookingResult(booking);
+        return new BookingCommandResult(booking);
     }
 }

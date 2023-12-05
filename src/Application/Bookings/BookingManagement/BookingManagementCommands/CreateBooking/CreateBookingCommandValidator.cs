@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace Application.Bookings.BookingManagement.CreateBooking;
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.CreateBooking;
 public class CreateBookingCommandValidator : AbstractValidator<CreateBookingCommand>
 {
     public CreateBookingCommandValidator()

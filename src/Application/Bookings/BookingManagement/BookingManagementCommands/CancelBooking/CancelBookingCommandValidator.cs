@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace Application.Bookings.BookingManagement.CancelBooking;
+namespace Application.Bookings.BookingManagement.BookingManagementCommands.CancelBooking;
 public class CancelBookingCommandValidator : AbstractValidator<CancelBookingCommand>
 {
     public CancelBookingCommandValidator()
