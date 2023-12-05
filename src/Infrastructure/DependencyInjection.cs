@@ -11,6 +11,7 @@ using Infrastructure.Services.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Application.Bookings;
 
 namespace Infrastructure;
 
@@ -31,6 +32,8 @@ public static class DependencyInjection
     private static IServiceCollection AddPersistence(this IServiceCollection services)
     {
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
         return services;
     }
 
@@ -58,7 +61,6 @@ public static class DependencyInjection
 
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
-
 
         return services;
     }
