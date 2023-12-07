@@ -11,6 +11,7 @@ using Domain.Common.Shared;
 using Domain.RoomType;
 using Domain.RoomType.ValueObjects;
 using Domain.User;
+using Domain.User.Exceptions;
 using Domain.User.ValueObjects;
 
 namespace Application.Bookings.BookingManagement.BookingManagementCommands.CreateBooking;
@@ -21,25 +22,23 @@ internal sealed class CreateBookingCommandHandler(
 {
     public async Task<Result<BookingCommandResult>> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
-        var realUserId = UserId.Create(request.UserId);
-        if (await userRepository.GetByIdAsync(realUserId) is not User)
+        if (await userRepository.GetByIdAsync(UserId.Create(request.UserId)) is not User)
         {
-            throw new InvalidOperationException("User doesn't exist");
+            return (Result<BookingCommandResult>)Result.Failure(DomainException.User.UserNotFound);
         }
 
-        var realRoomTypeId = RoomTypeId.Create(request.RoomTypeId);
-        if (await roomTypeRepository.GetByIdAsync(realRoomTypeId) is not RoomType)
+        if (await roomTypeRepository.GetByIdAsync(RoomTypeId.Create(request.RoomTypeId)) is not RoomType)
         {
             throw new InvalidOperationException("RoomType doesn't exist");
         }
 
-        var booking = Booking.Create(realUserId, realRoomTypeId, request.FromDate, request.ToDate, request.RoomCount);
+        var booking = Booking.Create(request.UserId, request.RoomTypeId, request.FromDate, request.ToDate, request.RoomCount);
 
         var add = bookingRepository.AddAsync(booking);
 
         Task.WaitAll(new Task[] { add },
                      cancellationToken);
 
-        return new BookingCommandResult(booking);
+        return new BookingCommandResult(add.Result);
     }
 }

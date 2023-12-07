@@ -4,6 +4,7 @@ using Domain.User.ValueObjects;
 using Domain.Room.ValueObjects;
 using Domain.RoomType.Enums;
 using Domain.RoomType.ValueObjects;
+using Domain.Booking.ValueObjects;
 
 namespace Domain.RoomType;
 
@@ -13,23 +14,29 @@ public sealed class RoomType : AggregateRoot<RoomTypeId>
 
     public RoomType(RoomTypeId roomTypeId,
                     Floor floor,
-                    uint bedCount,
-                    Money price,
-                    UserId userId)
+                    int bedCount,
+                    Money price)
         : base(roomTypeId)
     {
         Floor = floor;
         BedCount = bedCount;
         Price = price;
-        UserId = userId;
     }
 
     public Floor Floor { get; private set; }
-    public uint BedCount { get; private set; }
+    public int BedCount { get; private set; }
     public Money Price { get; private set; }
-    public UserId UserId { get; private set; }
-
     public IReadOnlyList<RoomId> RoomIds => _roomIds.AsReadOnly();
+
+    public static RoomType Create(
+        int floor,
+        int bedCount,
+        decimal amount,
+        int currency)
+    {
+        return new RoomType(RoomTypeId.Create(BaseId.NewId), Floor.FromValue(floor), bedCount, Money.Create(currency,amount));
+    }
+
 
     // #pragma warning disable CS8618
     //     private RoomType() { }

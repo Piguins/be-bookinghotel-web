@@ -5,7 +5,7 @@ namespace Domain.Common.ValueObjects;
 public sealed class Money : ValueObject
 {
     public static Money Usd => new("USD", 0);
-    public static Money Vnd => new("VND", 0);
+    public static Money Vnd => new("VND", 1);
 
     private Money(string currency, decimal amount)
     {
@@ -20,5 +20,16 @@ public sealed class Money : ValueObject
     {
         yield return Currency;
         yield return Amount;
+    }
+
+    public static Money Create(int currency, decimal amount)
+    {
+        switch (currency)
+        {
+            case 0:
+                return new Money("USD", amount);
+            default:
+                return new Money("VND", amount);
+        };
     }
 }

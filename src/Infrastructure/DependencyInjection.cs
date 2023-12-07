@@ -8,6 +8,7 @@ using Application.Users.Auth;
 using Application.Users;
 using Application.Bookings;
 using Application.RoomTypes;
+using Application.Rooms;
 
 namespace Infrastructure;
 
@@ -42,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
         return services;
     }
 }

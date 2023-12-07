@@ -23,21 +23,40 @@ public class Booking : AggregateRoot<BookingId>
         RoomCount = roomCount;
     }
 
-    public UserId UserId { get; set; }
-    public RoomTypeId RoomTypeId { get; set; }
-    public DateTime FromDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public int RoomCount { get; set; } = 1;
-    public BookingStatus BookingStatus { get; set; } = BookingStatus.Created;
+    public UserId UserId { get; private set; }
+    public RoomTypeId RoomTypeId { get; private set; }
+    public DateTime FromDate { get; private set; }
+    public DateTime EndDate { get; private set; }
+    public int RoomCount { get; private set; } = 1;
+    public BookingStatus BookingStatus { get; private set; } = BookingStatus.Created;
 
     public static Booking Create(
+        Guid userId,
+        Guid roomTypeId,
+        DateTime fromDate,
+        DateTime toDate,
+        int roomCount)
+    {
+        var booking = new Booking(BookingId.Create(BaseId.NewId), UserId.Create(userId),RoomTypeId.Create(roomTypeId), fromDate, toDate, roomCount);
+        return booking;
+    }
+
+    public void Update(
         UserId userId,
         RoomTypeId roomTypeId,
         DateTime fromDate,
         DateTime toDate,
         int roomCount)
     {
-        var booking = new Booking(BookingId.Create(BaseId.NewId), userId, roomTypeId, fromDate, toDate, roomCount);
-        return booking;
+        this.UserId = userId;
+        this.RoomTypeId = roomTypeId;
+        this.FromDate = fromDate;
+        this.EndDate = toDate;
+        this.RoomCount = roomCount;
+    }
+
+    public void UpdateStatus(BookingStatus status)
+    {
+        this.BookingStatus = status;
     }
 }
