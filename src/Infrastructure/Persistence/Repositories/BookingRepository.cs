@@ -1,4 +1,5 @@
-﻿using Domain.Booking;
+﻿using Application.Bookings;
+using Domain.Booking;
 using Domain.Booking.ValueObjects;
 using Domain.User.ValueObjects;
 
@@ -35,10 +36,12 @@ public class BookingRepository : IBookingRepository
             var booking = Bookings.FirstOrDefault(booking => booking.Id.Equals(aggregate.Id));
             if(booking != null)
             {
-                booking.RoomTypeId = aggregate.RoomTypeId;
-                booking.FromDate = aggregate.FromDate;
-                booking.EndDate = aggregate.EndDate;
-                booking.RoomCount = aggregate.RoomCount;
+                booking.Update(
+                    aggregate.UserId,
+                    aggregate.RoomTypeId,
+                    aggregate.FromDate,
+                    aggregate.EndDate,
+                    aggregate.RoomCount);
             }
             return booking;
         });

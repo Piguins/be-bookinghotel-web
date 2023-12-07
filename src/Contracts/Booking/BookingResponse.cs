@@ -13,3 +13,5 @@ public record BookingResponse(
     DateTime ToDate,
     string Status,
     int RoomCount);
+
+public record BookingList(List<BookingResponse> BookingResponses);

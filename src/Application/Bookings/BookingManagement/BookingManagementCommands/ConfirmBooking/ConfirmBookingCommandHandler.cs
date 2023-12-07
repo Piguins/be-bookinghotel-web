@@ -29,7 +29,8 @@ internal sealed class ConfirmBookingCommandHandler(
         var booking = await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId));
         if (booking is null)
         {
-            return (Result<BookingCommandResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
+            //return (Result<BookingCommandResult>)Result.Failure(BookingException.Booking.InvalidBookingId);
+            throw new InvalidOperationException("BookingId doesn't exist");
         }
 
         var user = await userRepository.GetByIdAsync(UserId.Create(request.UserId));
@@ -42,13 +43,13 @@ internal sealed class ConfirmBookingCommandHandler(
             return (Result<BookingCommandResult>)Result.Failure(DomainException.User.InvalidCredentials);
         }
 
-        booking.BookingStatus = BookingStatus.Confirmed;
+        booking.UpdateStatus(BookingStatus.Confirmed);
 
         var updatestatus = bookingRepository.UpdateAsync(booking);
 
         Task.WaitAll(new Task[] { updatestatus },
                      cancellationToken);
 
-        return new BookingCommandResult(booking);
+        return new BookingCommandResult(updatestatus.Result);
     }
 }

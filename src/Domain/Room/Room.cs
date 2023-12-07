@@ -23,6 +23,19 @@ public sealed class Room : AggregateRoot<RoomId>
     public bool IsReserved { get; private set; }
     public RoomTypeId RoomTypeId { get; private set; }
     public IReadOnlyList<RoomRating> RoomRatings => _roomRatings.ToList();
+    public static Room Create(string name, bool isReserved, Guid roomTypeId)
+    {
+        return new Room(RoomId.Create(Guid.NewGuid()), name, isReserved, RoomTypeId.Create(roomTypeId));
+    }
+    public void Update(string name, bool isReserved, RoomTypeId roomTypeId)
+    {
+        this.IsReserved = isReserved;
+        this.RoomTypeId = roomTypeId;
+        this.Name = name;
+    }
+
+
+
 
     // #pragma warning disable CS8618
     //     private Room() { }

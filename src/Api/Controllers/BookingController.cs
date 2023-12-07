@@ -1,5 +1,4 @@
 ﻿using Api.Abstractions;
-using Application.Bookings;
 using Application.Bookings.BookingManagement.BookingManagementCommands.CancelBooking;
 using Application.Bookings.BookingManagement.BookingManagementCommands.ConfirmBooking;
 using Application.Bookings.BookingManagement.BookingManagementCommands.CreateBooking;
@@ -9,13 +8,8 @@ using Application.Bookings.BookingManagement.BookingManagementQueries.GetAllBook
 using Contracts.BookingManagement;
 using Contracts.BookingManagement.Commands;
 using Contracts.BookingManagement.Queries;
-using Domain.Booking;
-using Domain.RoomType.ValueObjects;
-using Domain.User.ValueObjects;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Api.Controllers;
 
@@ -55,7 +49,7 @@ public class BookingController : ApiController
         return Ok(response);
     }
 
-    [HttpPost("confirm")]
+    [HttpPut("confirm")]
     public IActionResult ConfirmBooking(ConfirmBookingRequest request)
     {
         var result = _sender.Send(new ConfirmBookingCommand(
@@ -80,7 +74,7 @@ public class BookingController : ApiController
 
         return Ok(response);
     }
-    [HttpPost("cancel")]
+    [HttpPut("cancel")]
     public IActionResult CancelBooking(CancelBookingRequest request)
     {
         var result = _sender.Send(new CancelBookingCommand(
@@ -161,7 +155,7 @@ public class BookingController : ApiController
             responses.Add(response);
         }
 
-        return Ok(responses);
+        return Ok(new BookingList(responses));
     }
 
     [HttpGet("user")]
@@ -190,6 +184,6 @@ public class BookingController : ApiController
             responses.Add(response);
         }
 
-        return Ok(responses);
+        return Ok(new BookingList(responses));
     }
 }
