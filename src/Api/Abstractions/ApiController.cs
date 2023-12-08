@@ -1,14 +1,15 @@
 using Domain.Common.Shared;
-using MediatR;
+using Infrastructure.Services.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Abstractions;
 
 [ApiController]
-public abstract class ApiController(ISender sender) : ControllerBase
+[Route("api/[controller]")]
+[Authorize(Policy = nameof(PermissionRequirement.Guest))]
+public abstract class ApiController : ControllerBase
 {
-    protected readonly ISender _sender = sender;
-
     protected IActionResult HandleFailure(Result result) =>
         result switch
         {
@@ -36,6 +37,6 @@ public abstract class ApiController(ISender sender) : ControllerBase
             Type = error.Code,
             Detail = error.Message,
             Status = status,
-            Extensions = { { nameof(errors), errors ?? Array.Empty<Error>()}},
+            Extensions = { { nameof(errors), errors ?? [error] } },
         };
 }

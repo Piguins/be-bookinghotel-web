@@ -7,8 +7,8 @@ public abstract class Role : Enumeration<Role>
     public static readonly Role Guest = new GuestRole();
     public static readonly Role Host = new HostRole();
 
-    private readonly List<Permission> _permissions = new();
-    private readonly List<User> _users = new();
+    private readonly List<Permission> _permissions = [];
+    private readonly List<User> _users = [];
 
     private Role(int value, string name) : base(value, name)
     {
