@@ -33,15 +33,17 @@ var app = builder.Build();
     {
         app.UseSwagger();
         app.UseSwaggerUI();
-
-        app.Logger.LogInformation("Using Environment: {Environment}", "Development");
     }
+    app.Logger.LogInformation("Using Environment: {Environment}", app.Environment.EnvironmentName);
+    app.Logger.LogInformation("Running on Port: {Port}", 5000);
+
+    app.UseHttpsRedirection();
     app.UseExceptionHandler("/errors");
     app.UseSerilogRequestLogging();
-    app.UseHttpsRedirection();
+
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 
-    app.Logger.LogInformation("Running on Port: {Port}", 5000);
     app.Run();
 }

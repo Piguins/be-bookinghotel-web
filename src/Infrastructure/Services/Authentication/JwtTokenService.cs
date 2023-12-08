@@ -9,16 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services.Authentication;
 
-public sealed class JwtTokenGenerator : IJwtTokenGenerator
+public sealed class JwtTokenService(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtOptions) : IJwtTokenService
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly JwtSettings _jwtSettings;
-
-    public JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtOptions)
-    {
-        _dateTimeProvider = dateTimeProvider;
-        _jwtSettings = jwtOptions.Value;
-    }
+    private readonly SymmetricSecurityKey _key = new(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey));
 
     public string GenerateToken(User user)
     {
@@ -30,15 +23,14 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-
         var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
-            expires: _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256),
+            issuer: jwtOptions.Value.Issuer,
+            audience: jwtOptions.Value.Audience,
+            expires: dateTimeProvider.UtcNow.AddMinutes(jwtOptions.Value.ExpireMinutes),
+            signingCredentials: new SigningCredentials(_key, SecurityAlgorithms.HmacSha256),
             claims: claims);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }
