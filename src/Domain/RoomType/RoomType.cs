@@ -12,7 +12,7 @@ public sealed class RoomType : AggregateRoot<RoomTypeId>
 {
     private readonly List<RoomId> _roomIds = new();
 
-    public RoomType(RoomTypeId roomTypeId,
+    private RoomType(RoomTypeId roomTypeId,
                     Floor floor,
                     int bedCount,
                     Money price)
@@ -29,12 +29,11 @@ public sealed class RoomType : AggregateRoot<RoomTypeId>
     public IReadOnlyList<RoomId> RoomIds => _roomIds.AsReadOnly();
 
     public static RoomType Create(
-        int floor,
+        Floor floor,
         int bedCount,
-        decimal amount,
-        int currency)
+        Money price)
     {
-        return new RoomType(RoomTypeId.Create(BaseId.NewId), Floor.FromValue(floor), bedCount, Money.Create(currency,amount));
+        return new RoomType(RoomTypeId.NewId, floor, bedCount, price);
     }
 
 

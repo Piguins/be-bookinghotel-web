@@ -6,7 +6,7 @@ using Domain.User.ValueObjects;
 namespace Infrastructure.Persistence.Repositories;
 public class BookingRepository : IBookingRepository
 {
-    private static readonly List<Booking> Bookings = new();
+    private static readonly List<Booking> Bookings = [];
     public Task<Booking> AddAsync(Booking aggregate) => Task.Run(() =>
     {
         Bookings.Add(aggregate);
@@ -14,36 +14,33 @@ public class BookingRepository : IBookingRepository
     });
     public Task DeleteAsync(BookingId id) => throw new NotImplementedException();
     public Task<IEnumerable<Booking>> GetAllAsync() => throw new NotImplementedException();
-    public Task<List<Booking>> GetByUserIdAsync(Guid userId)
-    {
-        return Task.Run(() =>
+    public Task<List<Booking>> GetByUserIdAsync(Guid userId) =>
+        Task.Run(() =>
         {
             var result = Bookings.FindAll(x => x.UserId.Equals(UserId.Create(userId)));
             return result;
         });
-    }
-    public Task<Booking?> GetByIdAsync(BookingId id)
-    {
-        return Task.Run(() =>
+
+    public Task<Booking?> GetByIdAsync(BookingId id) =>
+        Task.Run(() =>
         {
             return Bookings.FirstOrDefault(booking => booking.Id.Equals(id));
         });
-    }
-    public Task<Booking?> UpdateAsync(Booking aggregate)
-    {
-        return Task.Run(() =>
+
+    public Task<Booking> UpdateAsync(Booking aggregate) =>
+        Task.Run(() =>
         {
-            var booking = Bookings.FirstOrDefault(booking => booking.Id.Equals(aggregate.Id));
-            if(booking != null)
+            if (Bookings.FirstOrDefault(booking => booking.Id.Equals(aggregate.Id)) is Booking booking)
             {
-                booking.Update(
-                    aggregate.UserId,
-                    aggregate.RoomTypeId,
-                    aggregate.FromDate,
-                    aggregate.EndDate,
-                    aggregate.RoomCount);
+                // booking.Update(
+                //     aggregate.UserId,
+                //     aggregate.RoomTypeId,
+                //     aggregate.FromDate,
+                //     aggregate.EndDate,
+                //     aggregate.RoomCount);
+                Bookings.Remove(booking);
             }
-            return booking;
+            Bookings.Add(aggregate);
+            return aggregate;
         });
-    }
 }

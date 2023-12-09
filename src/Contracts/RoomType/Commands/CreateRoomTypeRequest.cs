@@ -8,5 +8,5 @@ namespace Contracts.RoomType.Commands;
 public record CreateRoomTypeRequest(
     int Floor,
     int BedCount,
-    int Amount,
-    int Currency);
+    decimal Amount,
+    string Currency);

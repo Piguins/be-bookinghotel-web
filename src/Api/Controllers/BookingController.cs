@@ -1,58 +1,40 @@
 ﻿using Api.Abstractions;
-using Application.Bookings.BookingManagement.BookingManagementCommands.CancelBooking;
-using Application.Bookings.BookingManagement.BookingManagementCommands.ConfirmBooking;
-using Application.Bookings.BookingManagement.BookingManagementCommands.CreateBooking;
-using Application.Bookings.BookingManagement.BookingManagementCommands.UpdateBooking;
-using Application.Bookings.BookingManagement.BookingManagementQueries.GetAllBooking;
-using Application.Bookings.BookingManagement.BookingManagementQueries.GetAllBookings;
-using Contracts.BookingManagement;
-using Contracts.BookingManagement.Commands;
-using Contracts.BookingManagement.Queries;
+using Application.Bookings.Commands.CancelBooking;
+using Application.Bookings.Commands.ConfirmBooking;
+using Application.Bookings.Commands.CreateBooking;
+using Application.Bookings.Commands.UpdateBooking;
+using Application.Bookings.Queries.GetAllBookings;
+using Application.Bookings.Queries.GetBookingsByUserId;
+using AutoMapper;
+using Contracts.Booking;
+using Contracts.Booking.Commands;
+using Contracts.Booking.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("bookings")]
-public class BookingController : ApiController
+public class BookingController(ISender sender, IMapperBase mapper) : ApiController
 {
-    public BookingController(ISender sender) : base(sender)
-    {
-    }
-
-    [HttpPost("create")]
+    [HttpPost]
     public IActionResult CreateBooking(CreateBookingRequest request)
     {
-        var result = _sender.Send(new CreateBookingCommand(
+        var result = sender.Send(new CreateBookingCommand(
             request.UserId,
             request.RoomTypeId,
             request.FromDate,
             request.ToDate,
             request.RoomCount)).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var booking = result.Value.Booking;
-
-        var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(mapper.Map<BookingResponse>(result.Value));
     }
 
     [HttpPut("confirm")]
     public IActionResult ConfirmBooking(ConfirmBookingRequest request)
     {
-        var result = _sender.Send(new ConfirmBookingCommand(
+        var result = sender.Send(new ConfirmBookingCommand(
             request.BookingId,
             request.UserId)).Result;
 
@@ -61,48 +43,25 @@ public class BookingController : ApiController
             return HandleFailure(result);
         }
 
-        var booking = result.Value.Booking;
-
-        var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(mapper.Map<BookingResponse>(result.Value));
     }
     [HttpPut("cancel")]
     public IActionResult CancelBooking(CancelBookingRequest request)
     {
-        var result = _sender.Send(new CancelBookingCommand(
+        var result = sender.Send(new CancelBookingCommand(
             request.BookingId,
             request.UserId)).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var booking = result.Value.Booking;
-
-        var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(mapper.Map<BookingResponse>(result.Value));
     }
     [HttpPut("update")]
     public IActionResult UpdateBooking(UpdateBookingRequest request)
     {
-        var result = _sender.Send(new UpdateBookingCommand(
+        var result = sender.Send(new UpdateBookingCommand(
             request.UserId,
             request.BookingId,
             request.RoomTypeId,
@@ -110,80 +69,36 @@ public class BookingController : ApiController
             request.ToDate,
             request.RoomCount)).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var booking = result.Value.Booking;
-
-        var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(mapper.Map<BookingResponse>(result.Value));
     }
 
     [HttpGet]
     public IActionResult GetAllBookings(GetAllBookingsRequest request)
     {
-        var result = _sender.Send(new GetAllBookingQuery()).Result;
+        var result = sender.Send(new GetAllBookingQuery()).Result;
 
         if (result.IsFailure)
         {
             return HandleFailure(result);
         }
 
-        var bookings = result.Value.Bookings;
-        var responses = new List<BookingResponse>();
-
-        foreach(var booking in bookings)
-        {
-            var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-            responses.Add(response);
-        }
-
-        return Ok(new BookingList(responses));
+        var responses = result.Value.Bookings.ConvertAll(mapper.Map<BookingResponse>);
+        return Ok(new ListBookingResponse(responses));
     }
 
     [HttpGet("user")]
     public IActionResult GetBookingsByUserId(GetBookingsByUserIdRequest request)
     {
-        var result = _sender.Send(new GetBookingsByUserIdQuery(request.UserId)).Result;
+        var result = sender.Send(new GetBookingsByUserIdQuery(request.UserId)).Result;
 
         if (result.IsFailure)
         {
             return HandleFailure(result);
         }
 
-        var bookings = result.Value.Bookings;
-        var responses = new List<BookingResponse>();
-
-        foreach (var booking in bookings)
-        {
-            var response = new BookingResponse(
-            booking.Id.Value,
-            booking.UserId.Value,
-            booking.RoomTypeId.Value,
-            booking.FromDate,
-            booking.EndDate,
-            booking.BookingStatus.Name,
-            booking.RoomCount);
-            responses.Add(response);
-        }
-
-        return Ok(new BookingList(responses));
+        var responses = result.Value.Bookings.ConvertAll(mapper.Map<BookingResponse>);
+        return Ok(new ListBookingResponse(responses));
     }
 }

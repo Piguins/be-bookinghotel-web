@@ -13,10 +13,10 @@ internal class CreateRoomTypeCommandValidator : AbstractValidator<CreateRoomType
         RuleFor(x => x.BedCount)
             .GreaterThan(0);
         RuleFor(x => x.Currency)
-            .NotEmpty();
+            .Length(3);
         RuleFor(x => x.Amount)
             .GreaterThan(0);
-        RuleFor(x => x.Floor) 
-            .NotEmpty();
+        RuleFor(x => x.Floor)
+            .GreaterThan(0);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Services.Authentication;
 using Infrastructure.Services.Authentication.Setup;
 using Application.Abstractions.Commons;
+using Application.Bookings;
 using Infrastructure.Services.Commons;
 using Infrastructure.Persistence.Repositories;
 using Application.Users.Auth;
@@ -11,7 +12,6 @@ using Infrastructure.Services.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.JsonWebTokens;
-using Application.Bookings;
 using Application.RoomTypes;
 using Application.Rooms;
 

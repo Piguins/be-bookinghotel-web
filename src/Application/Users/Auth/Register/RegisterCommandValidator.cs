@@ -8,12 +8,14 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .EmailAddress()
+            .WithMessage(DomainException.User.InvalidEmail.Message);
         RuleFor(x => x.FirstName)
             .NotEmpty();
         RuleFor(x => x.LastName)
             .NotEmpty();
         RuleFor(x => x.Password)
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage(DomainException.User.InvalidPassword.Message);
     }
 }

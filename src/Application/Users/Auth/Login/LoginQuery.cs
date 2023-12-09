@@ -1,4 +1,4 @@
-using Application.Abstractions.Messaging;
+using Application.Abstractions.Mediator;
 
 namespace Application.Users.Auth.Login;
 

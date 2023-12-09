@@ -1,7 +1,6 @@
 using Domain.Booking.Enums;
 using Domain.Booking.ValueObjects;
 using Domain.Common.Primitives;
-using Domain.Common.ValueObjects;
 using Domain.RoomType.ValueObjects;
 using Domain.User.ValueObjects;
 
@@ -9,7 +8,7 @@ namespace Domain.Booking;
 
 public class Booking : AggregateRoot<BookingId>
 {
-    public Booking(BookingId bookingId,
+    private Booking(BookingId bookingId,
                    UserId userId,
                    RoomTypeId roomTypeId,
                    DateTime fromDate,
@@ -37,7 +36,13 @@ public class Booking : AggregateRoot<BookingId>
         DateTime toDate,
         int roomCount)
     {
-        var booking = new Booking(BookingId.Create(BaseId.NewId), UserId.Create(userId),RoomTypeId.Create(roomTypeId), fromDate, toDate, roomCount);
+        var booking = new Booking(
+            BookingId.NewId,
+            UserId.Create(userId),
+            RoomTypeId.Create(roomTypeId),
+            fromDate,
+            toDate,
+            roomCount);
         return booking;
     }
 
@@ -48,15 +53,12 @@ public class Booking : AggregateRoot<BookingId>
         DateTime toDate,
         int roomCount)
     {
-        this.UserId = userId;
-        this.RoomTypeId = roomTypeId;
-        this.FromDate = fromDate;
-        this.EndDate = toDate;
-        this.RoomCount = roomCount;
+        UserId = userId;
+        RoomTypeId = roomTypeId;
+        FromDate = fromDate;
+        EndDate = toDate;
+        RoomCount = roomCount;
     }
 
-    public void UpdateStatus(BookingStatus status)
-    {
-        this.BookingStatus = status;
-    }
+    public void UpdateStatus(BookingStatus status) => BookingStatus = status;
 }

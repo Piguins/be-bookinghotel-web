@@ -4,8 +4,7 @@ using Application.Rooms.Commands.DeleteRoom;
 using Application.Rooms.Commands.UpdateRoom;
 using Application.Rooms.Queries.GetAllRoom;
 using Application.Rooms.Queries.GetRoomByRoomTypeId;
-using Contracts.BookingManagement;
-using Contracts.BookingManagement.Queries;
+using Contracts.Booking.Queries;
 using Contracts.Room;
 using Contracts.Room.Commands;
 using Contracts.Room.Queries;
@@ -14,17 +13,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("rooms")]
-public class RoomController : ApiController
+public class RoomController(ISender sender) : ApiController
 {
-    public RoomController(ISender sender) : base(sender)
-    {
-    }
-
     [HttpPost("create")]
     public IActionResult CreateRoom(CreateRoomRequest request)
     {
-        var result = _sender.Send(new CreateRoomCommand(request.RoomTypeId, request.Name, request.IsReserved)).Result;
+        var result = sender.Send(new CreateRoomCommand(request.RoomTypeId, request.Name, request.IsReserved)).Result;
 
         if(result.IsFailure)
         {
@@ -40,7 +34,7 @@ public class RoomController : ApiController
     [HttpPut("update")]
     public IActionResult UpdateRoom(UpdateRoomRequest request)
     {
-        var result = _sender.Send(new UpdateRoomCommand(request.RoomId, request.RoomTypeId, request.Name, request.IsReserved)).Result;
+        var result = sender.Send(new UpdateRoomCommand(request.RoomId, request.RoomTypeId, request.Name, request.IsReserved)).Result;
 
         if (result.IsFailure)
         {
@@ -56,7 +50,7 @@ public class RoomController : ApiController
     [HttpDelete("delete")]
     public IActionResult DeleteRoom(DeleteRoomRequest request)
     {
-        var result = _sender.Send(new DeleteRoomCommand(request.RoomId)).Result;
+        var result = sender.Send(new DeleteRoomCommand(request.RoomId)).Result;
 
         if (result.IsFailure)
         {
@@ -72,7 +66,7 @@ public class RoomController : ApiController
     [HttpGet("roomtype")]
     public IActionResult GetRoomByRoomTypeId(GetRoomByRoomTypeIdRequest request)
     {
-        var result = _sender.Send(new GetRoomByRoomTypeIdQuery(request.RoomTypeId)).Result;
+        var result = sender.Send(new GetRoomByRoomTypeIdQuery(request.RoomTypeId)).Result;
 
         if (result.IsFailure)
         {
@@ -98,7 +92,7 @@ public class RoomController : ApiController
     [HttpGet]
     public IActionResult GetAllRoom(GetAllBookingsRequest request)
     {
-        var result = _sender.Send(new GetAllRoomQuery()).Result;
+        var result = sender.Send(new GetAllRoomQuery()).Result;
 
         if (result.IsFailure)
         {

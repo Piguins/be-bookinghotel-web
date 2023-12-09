@@ -9,7 +9,7 @@ public sealed class Room : AggregateRoot<RoomId>
 {
     private readonly List<RoomRating> _roomRatings = new();
 
-    public Room(RoomId id,
+    private Room(RoomId id,
                 string name,
                 bool isReserved,
                 RoomTypeId roomTypeId) : base(id)
@@ -23,10 +23,12 @@ public sealed class Room : AggregateRoot<RoomId>
     public bool IsReserved { get; private set; }
     public RoomTypeId RoomTypeId { get; private set; }
     public IReadOnlyList<RoomRating> RoomRatings => _roomRatings.ToList();
+
     public static Room Create(string name, bool isReserved, Guid roomTypeId)
     {
-        return new Room(RoomId.Create(Guid.NewGuid()), name, isReserved, RoomTypeId.Create(roomTypeId));
+        return new Room(RoomId.NewId, name, isReserved, RoomTypeId.Create(roomTypeId));
     }
+
     public void Update(string name, bool isReserved, RoomTypeId roomTypeId)
     {
         this.IsReserved = isReserved;

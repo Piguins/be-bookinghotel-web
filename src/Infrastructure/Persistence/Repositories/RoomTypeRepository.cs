@@ -1,29 +1,33 @@
-﻿using Domain.RoomType;
+﻿using Application.RoomTypes;
+using Domain.RoomType;
 using Domain.RoomType.ValueObjects;
 
 namespace Infrastructure.Persistence.Repositories;
 public class RoomTypeRepository : IRoomTypeRepository
 {
-    private static readonly List<RoomType> RoomType = new();
+    private static readonly List<RoomType> RoomTypes = [];
     public Task<RoomType> AddAsync(RoomType aggregate) =>
         Task.Run(() =>
         {
-            RoomType.Add(aggregate);
+            RoomTypes.Add(aggregate);
             return aggregate;
         });
     public Task DeleteAsync(RoomTypeId id) =>
         Task.Run(() =>
         {
-            RoomType.Remove(RoomType.FirstOrDefault(x => x.Id.Equals(id)));
+            if (RoomTypes.FirstOrDefault(room => room.Id.Equals(id)) is RoomType room)
+            {
+                RoomTypes.Remove(room);
+            }
         });
     public Task<IEnumerable<RoomType>> GetAllAsync() =>
         Task.Run(() =>
         {
-            return (IEnumerable<RoomType>)RoomType;
+            return (IEnumerable<RoomType>)RoomTypes;
         });
     public Task<RoomType?> GetByIdAsync(RoomTypeId id) => Task.Run(() =>
     {
-        return RoomType.FirstOrDefault(roomtype => roomtype.Id.Equals(id));
+        return RoomTypes.FirstOrDefault(roomtype => roomtype.Id.Equals(id));
     });
     public Task<RoomType> UpdateAsync(RoomType aggregate) => throw new NotImplementedException();
 }

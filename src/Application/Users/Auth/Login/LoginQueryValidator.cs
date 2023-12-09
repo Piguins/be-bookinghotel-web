@@ -8,8 +8,10 @@ public class LoginQueryValidator : AbstractValidator<LoginQuery>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .EmailAddress()
+            .WithMessage(DomainException.User.InvalidEmail.Message);
         RuleFor(x => x.Password)
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage(DomainException.User.InvalidPassword.Message);
     }
 }

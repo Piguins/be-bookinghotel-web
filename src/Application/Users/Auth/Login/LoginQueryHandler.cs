@@ -1,5 +1,3 @@
-using Application.Abstractions.Messaging;
-using Domain.Common.Shared;
 using Domain.User;
 
 namespace Application.Users.Auth.Login;
@@ -11,13 +9,13 @@ internal sealed class LoginQueryHandler(
 {
     public async Task<Result<AuthenticationResult>> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
-        if (await userRepository.GetByEmailAsync(request.Email) is not User user)
+        if (await userRepository.GetByEmailAsync(request.Email) is not { } user)
         {
-            return Result.Failure<AuthenticationResult>(DomainException.User.Auth.UserNotFound);
+            return Result.Failure<AuthenticationResult>(DomainException.User.UserNotFound);
         }
         if (!User.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
         {
-            return Result.Failure<AuthenticationResult>(DomainException.User.Auth.WrongPassword);
+            return Result.Failure<AuthenticationResult>(DomainException.User.WrongPassword);
         }
 
         string token = jwtTokenService.GenerateToken(user);

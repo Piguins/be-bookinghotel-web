@@ -1,6 +1,4 @@
 using System.Security.Cryptography;
-using Application.Abstractions.Messaging;
-using Domain.Common.Shared;
 using Domain.User;
 
 namespace Application.Users.Auth.Register;
@@ -14,7 +12,7 @@ internal sealed class RegisterCommandHandler(
     {
         if (await userRepository.GetByEmailAsync(request.Email) is not null)
         {
-            return Result.Failure<AuthenticationResult>(DomainException.User.Auth.EmailAlreadyExists);
+            return Result.Failure<AuthenticationResult>(DomainException.User.EmailAlreadyExists);
         }
 
         using var hashAlgorithm = SHA256.Create();
@@ -24,9 +22,9 @@ internal sealed class RegisterCommandHandler(
             request.FirstName,
             request.LastName,
             request.Password);
-        await userRepository.AddAsync(user);
 
         string token = jwtTokenService.GenerateToken(user);
+        await userRepository.AddAsync(user);
 
         return new AuthenticationResult(user, token);
     }

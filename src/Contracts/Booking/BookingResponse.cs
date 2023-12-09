@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Contracts.Booking;
 
-namespace Contracts.BookingManagement;
 public record BookingResponse(
-    Guid BookingId,
+    Guid Id,
     Guid UserId,
     Guid RoomTypeId,
     DateTime FromDate,
     DateTime ToDate,
-    string Status,
+    string BookingStatus,
     int RoomCount);
 
-public record BookingList(List<BookingResponse> BookingResponses);
+public record ListBookingResponse(List<BookingResponse> BookingResponses);

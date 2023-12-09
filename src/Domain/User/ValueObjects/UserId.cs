@@ -4,7 +4,7 @@ namespace Domain.User.ValueObjects;
 
 public class UserId : BaseId
 {
-    public UserId(Guid value) : base(value)
+    private UserId(Guid value) : base(value)
     {
     }
 

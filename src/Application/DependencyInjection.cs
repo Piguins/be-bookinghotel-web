@@ -31,6 +31,7 @@ public static class DependencyInjection
             config.RegisterServicesFromAssembly(ApplicationAssembly.Assembly);
         });
         services.AddValidatorsFromAssembly(ApplicationAssembly.Assembly, includeInternalTypes: true);
+        services.AddAutoMapper(ApplicationAssembly.Assembly);
 
         return services;
     }

@@ -5,7 +5,7 @@ namespace Domain.Common.ValueObjects;
 public sealed class Money : ValueObject
 {
     public static Money Usd => new("USD", 0);
-    public static Money Vnd => new("VND", 1);
+    public static Money Vnd => new("VND", 0);
 
     private Money(string currency, decimal amount)
     {
@@ -22,14 +22,28 @@ public sealed class Money : ValueObject
         yield return Amount;
     }
 
-    public static Money Create(int currency, decimal amount)
+    public Money Add(decimal amount)
     {
-        switch (currency)
+        Amount += amount;
+        return this;
+    }
+    public Money WithDraw(decimal amount)
+    {
+        if (Amount < amount)
         {
-            case 0:
-                return new Money("USD", amount);
-            default:
-                return new Money("VND", amount);
+            throw new Exception("Not enough money");
+        }
+        Amount -= amount;
+        return this;
+    }
+
+    public static Money FromCurrency(string currency)
+    {
+        return currency.ToUpper() switch
+        {
+            "USD" => Usd,
+            "VND" => Vnd,
+            _ => throw new Exception("Invalid Currency")
         };
     }
 }

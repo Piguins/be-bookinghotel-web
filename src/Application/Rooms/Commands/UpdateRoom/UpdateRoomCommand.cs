@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Application.Abstractions.Messaging;
+using Application.Abstractions.Mediator;
 
 namespace Application.Rooms.Commands.UpdateRoom;
 public record UpdateRoomCommand(
