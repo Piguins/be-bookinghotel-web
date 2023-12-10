@@ -1,10 +1,8 @@
-using Domain.Common.Exceptions;
-
 namespace Domain.Common.Shared;
 
 public class Result
 {
-    protected internal Result(bool isSuccess, Error error)
+    protected Result(bool isSuccess, Error error)
     {
         if (
             (isSuccess && error != Error.None)
@@ -23,5 +21,27 @@ public class Result
     public Error Error { get; }
 
     public static Result Success() => new(true, Error.None);
-    public static Result Failure(Error error) => new(true, error);
+
+    public static Result Failure(Error error) => new(false, error);
+    public static Result<TValue> Failure<TValue>(Error error) => new(false, error, default);
+    public static Result<T> Failure<T>(object roomTypeIdNotValid) => throw new NotImplementedException();
+}
+
+// ResultT
+public class Result<TValue>(bool isSuccess, Error error, TValue? value) : Result(isSuccess, error)
+{
+    public TValue Value =>
+        IsSuccess
+            ? value!
+            : throw new InvalidOperationException("The value of a failure result can not be accessed");
+
+    public static implicit operator Result<TValue>(TValue? value)
+    {
+        return new Result<TValue>(true, Error.None, value);
+    }
+
+    // public static implicit operator Result<TValue>(Error error)
+    // {
+    //     return new Result<TValue>(false, error, default);
+    // }
 }

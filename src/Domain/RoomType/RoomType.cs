@@ -4,6 +4,7 @@ using Domain.User.ValueObjects;
 using Domain.Room.ValueObjects;
 using Domain.RoomType.Enums;
 using Domain.RoomType.ValueObjects;
+using Domain.Booking.ValueObjects;
 
 namespace Domain.RoomType;
 
@@ -11,25 +12,30 @@ public sealed class RoomType : AggregateRoot<RoomTypeId>
 {
     private readonly List<RoomId> _roomIds = new();
 
-    public RoomType(RoomTypeId roomTypeId,
+    private RoomType(RoomTypeId roomTypeId,
                     Floor floor,
-                    uint bedCount,
-                    Money price,
-                    UserId userId)
+                    int bedCount,
+                    Money price)
         : base(roomTypeId)
     {
         Floor = floor;
         BedCount = bedCount;
         Price = price;
-        UserId = userId;
     }
 
     public Floor Floor { get; private set; }
-    public uint BedCount { get; private set; }
+    public int BedCount { get; private set; }
     public Money Price { get; private set; }
-    public UserId UserId { get; private set; }
-
     public IReadOnlyList<RoomId> RoomIds => _roomIds.AsReadOnly();
+
+    public static RoomType Create(
+        Floor floor,
+        int bedCount,
+        Money price)
+    {
+        return new RoomType(RoomTypeId.NewId, floor, bedCount, price);
+    }
+
 
     // #pragma warning disable CS8618
     //     private RoomType() { }

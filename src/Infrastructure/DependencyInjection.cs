@@ -1,26 +1,49 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Services.Authentication;
+using Infrastructure.Services.Authentication.Setup;
 using Application.Abstractions.Commons;
+using Application.Bookings;
 using Infrastructure.Services.Commons;
-using Infrastructure.Services.Repositories;
+using Infrastructure.Persistence.Repositories;
 using Application.Users.Auth;
 using Application.Users;
+using Infrastructure.Services.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Application.RoomTypes;
+using Application.Rooms;
 
 namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+        ConfigurationManager configuration)
     {
         // string? connectionString = configuration.GetConnectionString("DefaultConnection");
         // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-        services.AddCommon();
-        services.AddPersistence();
-        services.AddAuthentication(configuration);
+        services
+            .AddServices(configuration)
+            .AddPersistence();
 
         return services;
     }
+
+    private static IServiceCollection AddPersistence(this IServiceCollection services)
+    {
+        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
+        return services;
+    }
+
+    private static IServiceCollection
+        AddServices(this IServiceCollection services, ConfigurationManager configuration) => services
+        .AddCommon()
+        .AddAuth(configuration);
 
     private static IServiceCollection AddCommon(this IServiceCollection services)
     {
@@ -28,16 +51,20 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddAuth(this IServiceCollection services, ConfigurationManager configuration)
     {
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        return services;
-    }
+        services
+            .ConfigureOptions<JwtSettingsSetup>()
+            .ConfigureOptions<JwtBearerOptionsSetup>()
+            .AddSingleton<IJwtTokenService, JwtTokenService>();
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services)
-    {
-        services.AddScoped<IUserRepository, UserRepository>();
+        JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
+
+        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+
         return services;
     }
 }

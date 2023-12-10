@@ -2,31 +2,31 @@ using Domain.Common.Primitives;
 
 namespace Domain.User.Enums;
 
-public abstract class Role : Enumeration<Role>
+public class Role : Enumeration<Role>
 {
-    public static readonly Role Guest = new GuestRole();
-    public static readonly Role Host = new HostRole();
+    public static readonly Role Guest = new(1, "Host");
+    public static readonly Role Host = new(2, "Guest");
 
-    private readonly List<Permission> _permissions = new();
-    private readonly List<User> _users = new();
+    private readonly List<Permission> _permissions = [];
+    private readonly List<User> _users = [];
 
-    private Role(int value, string name) : base(value, name)
+    private Role(int priority, string name) : base(priority, name)
     {
     }
 
     public IReadOnlyList<Permission> Permissions => _permissions.AsReadOnly();
     public IReadOnlyList<User> Users => _users.AsReadOnly();
 
-    private sealed class GuestRole : Role
-    {
-        public GuestRole() : base(1, "Guest")
-        {
-        }
-    }
-    private sealed class HostRole : Role
-    {
-        public HostRole() : base(2, "Host")
-        {
-        }
-    }
+    // private sealed class HostRole : Role
+    // {
+    //     public HostRole() : base(1, "Host")
+    //     {
+    //     }
+    // }
+    // private sealed class GuestRole : Role
+    // {
+    //     public GuestRole() : base(2, "Guest")
+    //     {
+    //     }
+    // }
 }

@@ -21,4 +21,29 @@ public sealed class Money : ValueObject
         yield return Currency;
         yield return Amount;
     }
+
+    public Money Add(decimal amount)
+    {
+        Amount += amount;
+        return this;
+    }
+    public Money WithDraw(decimal amount)
+    {
+        if (Amount < amount)
+        {
+            throw new Exception("Not enough money");
+        }
+        Amount -= amount;
+        return this;
+    }
+
+    public static Money FromCurrency(string currency)
+    {
+        return currency.ToUpper() switch
+        {
+            "USD" => Usd,
+            "VND" => Vnd,
+            _ => throw new Exception("Invalid Currency")
+        };
+    }
 }

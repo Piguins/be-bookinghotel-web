@@ -8,12 +8,12 @@ namespace Domain.Booking;
 
 public class Booking : AggregateRoot<BookingId>
 {
-    public Booking(BookingId bookingId,
+    private Booking(BookingId bookingId,
                    UserId userId,
                    RoomTypeId roomTypeId,
                    DateTime fromDate,
                    DateTime toDate,
-                   uint roomCount) : base(bookingId)
+                   int roomCount) : base(bookingId)
     {
         UserId = userId;
         RoomTypeId = roomTypeId;
@@ -22,10 +22,43 @@ public class Booking : AggregateRoot<BookingId>
         RoomCount = roomCount;
     }
 
-    public UserId UserId { get; set; }
-    public RoomTypeId RoomTypeId { get; set; }
-    public DateTime FromDate { get; set; }
-    public DateTime ToDate { get; set; }
-    public uint RoomCount { get; set; } = 1;
-    public BookingStatus BookingStatus { get; set; } = BookingStatus.Created;
+    public UserId UserId { get; private set; }
+    public RoomTypeId RoomTypeId { get; private set; }
+    public DateTime FromDate { get; private set; }
+    public DateTime ToDate { get; private set; }
+    public int RoomCount { get; private set; } = 1;
+    public BookingStatus BookingStatus { get; private set; } = BookingStatus.Created;
+
+    public static Booking Create(
+        Guid userId,
+        Guid roomTypeId,
+        DateTime fromDate,
+        DateTime toDate,
+        int roomCount)
+    {
+        var booking = new Booking(
+            BookingId.NewId,
+            UserId.Create(userId),
+            RoomTypeId.Create(roomTypeId),
+            fromDate,
+            toDate,
+            roomCount);
+        return booking;
+    }
+
+    public void Update(
+        UserId userId,
+        RoomTypeId roomTypeId,
+        DateTime fromDate,
+        DateTime toDate,
+        int roomCount)
+    {
+        UserId = userId;
+        RoomTypeId = roomTypeId;
+        FromDate = fromDate;
+        ToDate = toDate;
+        RoomCount = roomCount;
+    }
+
+    public void UpdateStatus(BookingStatus status) => BookingStatus = status;
 }
