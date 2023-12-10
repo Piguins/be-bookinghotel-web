@@ -13,7 +13,11 @@ public class BookingRepository : IBookingRepository
         return aggregate;
     });
     public Task DeleteAsync(BookingId id) => throw new NotImplementedException();
-    public Task<IEnumerable<Booking>> GetAllAsync() => throw new NotImplementedException();
+    public Task<IEnumerable<Booking>> GetAllAsync() =>
+        Task.Run(() =>
+        {
+            return Bookings.AsEnumerable();
+        });
     public Task<List<Booking>> GetByUserIdAsync(Guid userId) =>
         Task.Run(() =>
         {

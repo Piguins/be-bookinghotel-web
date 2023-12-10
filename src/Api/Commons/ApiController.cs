@@ -3,11 +3,11 @@ using Infrastructure.Services.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Api.Abstractions;
+namespace Api.Commons;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = nameof(PermissionRequirement.Guest))]
+// [Authorize(Policy = nameof(PermissionRequirement.Guest))]
 public abstract class ApiController : ControllerBase
 {
     protected IActionResult HandleFailure(Result result) =>

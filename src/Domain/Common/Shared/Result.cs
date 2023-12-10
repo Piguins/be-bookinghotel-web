@@ -24,6 +24,7 @@ public class Result
 
     public static Result Failure(Error error) => new(false, error);
     public static Result<TValue> Failure<TValue>(Error error) => new(false, error, default);
+    public static Result<T> Failure<T>(object roomTypeIdNotValid) => throw new NotImplementedException();
 }
 
 // ResultT

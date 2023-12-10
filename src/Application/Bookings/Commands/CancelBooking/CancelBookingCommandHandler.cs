@@ -16,7 +16,7 @@ internal sealed class CancelBookingCommandHandler(
         {
             return Result.Failure<BookingResult>(DomainException.Booking.InvalidBookingId);
         }
-        if (await userRepository.GetByIdAsync(UserId.Create(request.UserId)) is not { } user)
+        if (await userRepository.GetByIdAsync(UserId.Create(request.UserId)) is null)
         {
             return Result.Failure<BookingResult>(DomainException.User.UserNotFound);
         }
@@ -25,7 +25,7 @@ internal sealed class CancelBookingCommandHandler(
 
         var cancelAsync = bookingRepository.UpdateAsync(booking);
 
-        Task.WaitAll(new Task[] { cancelAsync },
+        Task.WaitAll([cancelAsync],
                      cancellationToken);
 
         return mapper.Map<BookingResult>(cancelAsync.Result);

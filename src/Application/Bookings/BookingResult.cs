@@ -8,5 +8,3 @@ public record BookingResult(
     DateTime ToDate,
     int RoomCount,
     string BookingStatus);
-
-public record ListBookingResult(List<BookingResult> Bookings);

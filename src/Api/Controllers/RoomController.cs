@@ -1,44 +1,41 @@
-﻿using Api.Abstractions;
+﻿using Api.Commons;
 using Application.Rooms.Commands.CreateRoom;
 using Application.Rooms.Commands.DeleteRoom;
 using Application.Rooms.Commands.UpdateRoom;
 using Application.Rooms.Queries.GetAllRoom;
 using Application.Rooms.Queries.GetRoomByRoomTypeId;
-using Contracts.Booking.Queries;
 using Contracts.Room;
 using Contracts.Room.Commands;
-using Contracts.Room.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
 public class RoomController(ISender sender) : ApiController
 {
-    [HttpPost("create")]
+    [HttpPost]
     public IActionResult CreateRoom(CreateRoomRequest request)
     {
-        var result = sender.Send(new CreateRoomCommand(request.RoomTypeId, request.Name, request.IsReserved)).Result;
+        var result = sender.Send(new CreateRoomCommand(request.RoomTypeId, request.Name)).Result;
 
-        if(result.IsFailure)
-        {
-            HandleFailure(result);
-        }
-
-        var room = result.Value.Room;
-        var response = new RoomResponse(room.Id.Value, room.RoomTypeId.Value, room.IsReserved, room.Name);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(new RoomResponse(
+                    result.Value.Room.Id.Value,
+                    result.Value.Room.RoomTypeId.Value,
+                    result.Value.Room.IsReserved,
+                    result.Value.Room.Name));
     }
 
-    [HttpPut("update")]
+    [HttpPut]
     public IActionResult UpdateRoom(UpdateRoomRequest request)
     {
         var result = sender.Send(new UpdateRoomCommand(request.RoomId, request.RoomTypeId, request.Name, request.IsReserved)).Result;
 
         if (result.IsFailure)
         {
-            HandleFailure(result);
+            return HandleFailure(result);
         }
 
         var room = result.Value.Room;
@@ -47,14 +44,14 @@ public class RoomController(ISender sender) : ApiController
         return Ok(response);
     }
 
-    [HttpDelete("delete")]
+    [HttpDelete]
     public IActionResult DeleteRoom(DeleteRoomRequest request)
     {
         var result = sender.Send(new DeleteRoomCommand(request.RoomId)).Result;
 
         if (result.IsFailure)
         {
-            HandleFailure(result);
+            return HandleFailure(result);
         }
 
         var room = result.Value.Room;
@@ -63,14 +60,14 @@ public class RoomController(ISender sender) : ApiController
         return Ok(response);
     }
 
-    [HttpGet("roomtype")]
-    public IActionResult GetRoomByRoomTypeId(GetRoomByRoomTypeIdRequest request)
+    [HttpGet("RoomType/{roomTypeId}")]
+    public IActionResult GetRoomByRoomTypeId(string roomTypeId)
     {
-        var result = sender.Send(new GetRoomByRoomTypeIdQuery(request.RoomTypeId)).Result;
+        var result = sender.Send(new GetRoomByRoomTypeIdQuery(roomTypeId)).Result;
 
         if (result.IsFailure)
         {
-            HandleFailure(result);
+            return HandleFailure(result);
         }
 
         var rooms = result.Value.Rooms;
@@ -86,17 +83,18 @@ public class RoomController(ISender sender) : ApiController
             responses.Add(response);
         }
 
-        return Ok(new RoomList(responses));
+        return Ok(responses);
     }
 
-    [HttpGet]
-    public IActionResult GetAllRoom(GetAllBookingsRequest request)
+    [HttpGet("get-all")]
+    [AllowAnonymous]
+    public IActionResult GetAllRoom()
     {
         var result = sender.Send(new GetAllRoomQuery()).Result;
 
         if (result.IsFailure)
         {
-            HandleFailure(result);
+            return HandleFailure(result);
         }
 
         var rooms = result.Value.Rooms;
@@ -112,6 +110,6 @@ public class RoomController(ISender sender) : ApiController
             responses.Add(response);
         }
 
-        return Ok(new RoomList(responses));
+        return Ok(responses);
     }
 }

@@ -23,7 +23,7 @@ internal sealed class CreateRoomTypeCommandHandler(IRoomTypeRepository roomTypeR
 
         var add = roomTypeRepository.AddAsync(roomType);
 
-        Task.WaitAll(new Task[] { add },
+        Task.WaitAll([add],
                      cancellationToken);
 
         return Task.FromResult<Result<RoomTypeCommandResult>>(new RoomTypeCommandResult(add.Result));

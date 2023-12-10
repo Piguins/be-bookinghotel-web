@@ -1,10 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Abstractions.Mediator;
-using Domain.RoomType.ValueObjects;
+﻿namespace Application.Rooms.Queries.GetRoomByRoomTypeId;
 
-namespace Application.Rooms.Queries.GetRoomByRoomTypeId;
-public record GetRoomByRoomTypeIdQuery(Guid RoomTypeId) : IQuery<RoomQueryResult>;
+public record GetRoomByRoomTypeIdQuery(string RoomTypeId) : IQuery<RoomQueryResult>;

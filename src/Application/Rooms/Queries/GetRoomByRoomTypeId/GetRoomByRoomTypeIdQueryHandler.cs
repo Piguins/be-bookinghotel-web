@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Abstractions.Mediator;
-using Application.RoomTypes;
-using Domain.Common.Shared;
+﻿using Application.RoomTypes;
 using Domain.RoomType.ValueObjects;
 
 namespace Application.Rooms.Queries.GetRoomByRoomTypeId;
@@ -15,15 +8,19 @@ internal sealed class GetRoomByRoomTypeIdQueryHandler(
 {
     public async Task<Result<RoomQueryResult>> Handle(GetRoomByRoomTypeIdQuery request, CancellationToken cancellationToken)
     {
-        if (await roomTypeRepository.GetByIdAsync(RoomTypeId.Create(request.RoomTypeId)) is null)
+        if (Guid.TryParse(request.RoomTypeId, out var guid) is false)
         {
-            throw new InvalidOperationException("RoomType doesn't exist");
+            return Result.Failure<RoomQueryResult>(DomainException.RoomType.RoomTypeIdNotValid);
+        }
+        if (await roomTypeRepository.GetByIdAsync(RoomTypeId.Create(guid)) is null)
+        {
+            return Result.Failure<RoomQueryResult>(DomainException.RoomType.RoomTypeNotFound);
         }
 
-        var get = roomRepository.GetByRoomTypeIdAsync(request.RoomTypeId);
+        var get = roomRepository.GetByRoomTypeIdAsync(guid);
 
-        Task.WaitAll(new Task[] { get }, cancellationToken);
+        Task.WaitAll([get], cancellationToken);
 
-        return new RoomQueryResult(get.Result.ToList());
+        return new RoomQueryResult([.. get.Result]);
     }
 }

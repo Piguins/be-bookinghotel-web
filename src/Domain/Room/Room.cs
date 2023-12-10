@@ -24,16 +24,21 @@ public sealed class Room : AggregateRoot<RoomId>
     public RoomTypeId RoomTypeId { get; private set; }
     public IReadOnlyList<RoomRating> RoomRatings => _roomRatings.ToList();
 
-    public static Room Create(string name, bool isReserved, Guid roomTypeId)
-    {
-        return new Room(RoomId.NewId, name, isReserved, RoomTypeId.Create(roomTypeId));
-    }
+    public static Room Create(string name, bool isReserved, Guid roomTypeId) =>
+        new(
+            RoomId.NewId,
+            name,
+            isReserved,
+            RoomTypeId.Create(roomTypeId));
 
-    public void Update(string name, bool isReserved, RoomTypeId roomTypeId)
+    public void Update(
+        string? name,
+        bool? isReserved,
+        RoomTypeId? roomTypeId)
     {
-        this.IsReserved = isReserved;
-        this.RoomTypeId = roomTypeId;
-        this.Name = name;
+        IsReserved = isReserved ?? IsReserved;
+        RoomTypeId = roomTypeId ?? RoomTypeId;
+        Name = name ?? Name;
     }
 
 

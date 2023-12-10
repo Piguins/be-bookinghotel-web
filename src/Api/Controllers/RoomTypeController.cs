@@ -1,4 +1,4 @@
-﻿using Api.Abstractions;
+﻿using Api.Commons;
 using Application.RoomTypes.Commands.CreateRoomType;
 using Application.RoomTypes.Commands.DeleteRoomType;
 using Application.RoomTypes.Queries.GetAllRoomType;
@@ -6,6 +6,7 @@ using Contracts.RoomType;
 using Contracts.RoomType.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
@@ -20,20 +21,16 @@ public class RoomTypeController(ISender sender) : ApiController
             request.Amount,
             request.Currency)).Result;
 
-        if (result.IsFailure)
-        {
-            HandleFailure(result);
-        }
 
-        var roomType = result.Value.RoomType;
-        var response = new RoomTypeResponse(
-            roomType.Id.Value,
-            roomType.Floor.Name,
-            roomType.BedCount,
-            roomType.Price.Amount,
-            roomType.Price.Currency);
 
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(new RoomTypeResponse(
+                    result.Value.RoomType.Id.Value,
+                    result.Value.RoomType.Floor.Name,
+                    result.Value.RoomType.BedCount,
+                    result.Value.RoomType.Price.Amount,
+                    result.Value.RoomType.Price.Currency));
     }
 
     [HttpDelete]
@@ -41,30 +38,24 @@ public class RoomTypeController(ISender sender) : ApiController
     {
         var result = sender.Send(new DeleteRoomTypeCommand(request.RoomTypeId)).Result;
 
-        if (result.IsFailure)
-        {
-            HandleFailure(result);
-        }
-
-        var roomType = result.Value.RoomType;
-        var response = new RoomTypeResponse(
-            roomType.Id.Value,
-            roomType.Floor.Name,
-            roomType.BedCount,
-            roomType.Price.Amount,
-            roomType.Price.Currency);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(new RoomTypeResponse(
+                    result.Value.RoomType.Id.Value,
+                    result.Value.RoomType.Floor.Name,
+                    result.Value.RoomType.BedCount,
+                    result.Value.RoomType.Price.Amount,
+                    result.Value.RoomType.Price.Currency));
     }
 
-    [HttpGet]
+    [HttpGet("get-all")]
+    [AllowAnonymous]
     public IActionResult GetAllRoomType()
     {
         var result = sender.Send(new GetAllRoomTypeQuery()).Result;
 
-        var roomTypes = result.Value.RoomTypes;
         var responses =
-            roomTypes.Select(roomType =>
+            result.Value.RoomTypes.Select(roomType =>
                 new RoomTypeResponse(
                     roomType.Id.Value,
                     roomType.Floor.Name,
@@ -72,6 +63,6 @@ public class RoomTypeController(ISender sender) : ApiController
                     roomType.Price.Amount,
                     roomType.Price.Currency)).ToList();
 
-        return Ok(new RoomTypeList(responses));
+        return Ok(responses);
     }
 }

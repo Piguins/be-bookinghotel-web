@@ -15,7 +15,7 @@ internal sealed class DeleteRoomTypeCommandHandler(IRoomTypeRepository roomTypeR
 
         var deleteAsync = roomTypeRepository.DeleteAsync(roomType.Id);
 
-        Task.WaitAll(new Task[] { deleteAsync },
+        Task.WaitAll([deleteAsync],
                      cancellationToken);
 
         return new RoomTypeCommandResult(roomType);

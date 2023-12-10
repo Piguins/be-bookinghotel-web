@@ -7,5 +7,6 @@ public static partial class DomainException
     {
         public static Error RoomTypeNotFound => new("RoomTypeNotFound", "RoomType not found.");
         public static Error InvalidFloor => new("Invalid Floor", "this floor number doesn't exist");
+        public static Error RoomTypeIdNotValid => new("RoomTypeIdNotValid", "RoomTypeId is not valid.");
     }
 }

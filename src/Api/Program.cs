@@ -1,4 +1,5 @@
 using Api.Exception;
+using Api.Commons;
 using Application;
 using Infrastructure;
 using Serilog;
@@ -17,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
+    builder.Services.AddAutoMapper(typeof(Program).Assembly, ApplicationAssembly.Assembly);
 
     builder
         .Host

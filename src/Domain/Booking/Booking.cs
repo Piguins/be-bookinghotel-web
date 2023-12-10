@@ -18,14 +18,14 @@ public class Booking : AggregateRoot<BookingId>
         UserId = userId;
         RoomTypeId = roomTypeId;
         FromDate = fromDate;
-        EndDate = toDate;
+        ToDate = toDate;
         RoomCount = roomCount;
     }
 
     public UserId UserId { get; private set; }
     public RoomTypeId RoomTypeId { get; private set; }
     public DateTime FromDate { get; private set; }
-    public DateTime EndDate { get; private set; }
+    public DateTime ToDate { get; private set; }
     public int RoomCount { get; private set; } = 1;
     public BookingStatus BookingStatus { get; private set; } = BookingStatus.Created;
 
@@ -56,7 +56,7 @@ public class Booking : AggregateRoot<BookingId>
         UserId = userId;
         RoomTypeId = roomTypeId;
         FromDate = fromDate;
-        EndDate = toDate;
+        ToDate = toDate;
         RoomCount = roomCount;
     }
 

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Abstractions.Mediator;
-using Application.RoomTypes;
-using Domain.Common.Shared;
-using Domain.Room;
+﻿using Application.RoomTypes;
 using Domain.Room.ValueObjects;
 using Domain.RoomType.ValueObjects;
 
@@ -17,20 +9,23 @@ internal sealed class UpdateRoomCommandHandler(IRoomRepository roomRepository, I
         UpdateRoomCommand request,
         CancellationToken cancellationToken)
     {
-        if (await roomTypeRepository.GetByIdAsync(RoomTypeId.Create(request.RoomTypeId)) is null)
+        if (await roomRepository.GetByIdAsync(RoomId.Create(request.RoomId)) is not { } room)
         {
-            throw new InvalidOperationException("RoomType doesn't exist");
+            return Result.Failure<RoomCommandResult>(DomainException.Room.RoomNotFound);
+        }
+        if (request.RoomTypeId.HasValue
+            && await roomTypeRepository.GetByIdAsync(RoomTypeId.Create((Guid)request.RoomTypeId)) is null)
+        {
+            return Result.Failure<RoomCommandResult>(DomainException.RoomType.RoomTypeNotFound);
         }
 
-        var room = await roomRepository.GetByIdAsync(RoomId.Create(request.RoomId));
-        if(room is null)
-        {
-            throw new InvalidOperationException("Room doesn't exist");
-        }
-
+        room.Update(
+            request.Name,
+            request.IsReserved,
+            !request.RoomTypeId.HasValue ? null : RoomTypeId.Create((Guid)request.RoomTypeId));
         var update = roomRepository.UpdateAsync(room);
 
-        Task.WaitAll(new Task[] { update }, cancellationToken);
+        Task.WaitAll([update], cancellationToken);
 
         return new RoomCommandResult(update.Result);
     }

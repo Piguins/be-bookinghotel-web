@@ -1,11 +1,10 @@
-using Api.Abstractions;
 using Application.Users.Auth.Login;
 using Application.Users.Auth.Register;
 using Contracts.Authentication;
-using Infrastructure.Services.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Api.Commons;
 
 namespace Api.Controllers;
 

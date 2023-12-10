@@ -9,4 +9,3 @@ public record BookingResponse(
     string BookingStatus,
     int RoomCount);
 
-public record ListBookingResponse(List<BookingResponse> BookingResponses);

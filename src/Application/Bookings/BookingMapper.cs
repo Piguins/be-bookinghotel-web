@@ -7,14 +7,14 @@ public class BookingMapper : Profile
     public BookingMapper()
     {
         CreateMap<Booking, BookingResult>()
-            .ForMember(
-                r => r.Id,
-                o => o.MapFrom(s => s.Id.Value))
-            .ForMember(
-                r => r.UserId,
-                o => o.MapFrom(s => s.UserId.Value))
-            .ForMember(
-                r => r.RoomTypeId,
-                o => o.MapFrom(s => s.RoomTypeId.Value));
+            .ConstructUsing(x => new BookingResult(
+                x.Id.Value,
+                x.UserId.Value,
+                x.RoomTypeId.Value,
+                x.FromDate,
+                x.ToDate,
+                x.RoomCount,
+                x.BookingStatus.ToString() ?? string.Empty));
     }
 }
+

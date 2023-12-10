@@ -1,4 +1,4 @@
-﻿using Api.Abstractions;
+﻿using Api.Commons;
 using Application.Bookings.Commands.CancelBooking;
 using Application.Bookings.Commands.ConfirmBooking;
 using Application.Bookings.Commands.CreateBooking;
@@ -8,13 +8,13 @@ using Application.Bookings.Queries.GetBookingsByUserId;
 using AutoMapper;
 using Contracts.Booking;
 using Contracts.Booking.Commands;
-using Contracts.Booking.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
-public class BookingController(ISender sender, IMapperBase mapper) : ApiController
+public class BookingController(ISender sender, IMapper mapper) : ApiController
 {
     [HttpPost]
     public IActionResult CreateBooking(CreateBookingRequest request)
@@ -37,11 +37,6 @@ public class BookingController(ISender sender, IMapperBase mapper) : ApiControll
         var result = sender.Send(new ConfirmBookingCommand(
             request.BookingId,
             request.UserId)).Result;
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
 
         return result.IsFailure
             ? HandleFailure(result)
@@ -74,8 +69,23 @@ public class BookingController(ISender sender, IMapperBase mapper) : ApiControll
             : Ok(mapper.Map<BookingResponse>(result.Value));
     }
 
-    [HttpGet]
-    public IActionResult GetAllBookings(GetAllBookingsRequest request)
+    [HttpGet("user/{userId}")]
+    public IActionResult GetBookingsByUserId(string userId)
+    {
+        var result = sender.Send(new GetBookingsByUserIdQuery(userId)).Result;
+
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        var responses = result.Value.ConvertAll(mapper.Map<BookingResponse>);
+        return Ok(responses);
+    }
+
+    [HttpGet("get-all")]
+    [AllowAnonymous]
+    public IActionResult GetAllBookings()
     {
         var result = sender.Send(new GetAllBookingQuery()).Result;
 
@@ -84,21 +94,8 @@ public class BookingController(ISender sender, IMapperBase mapper) : ApiControll
             return HandleFailure(result);
         }
 
-        var responses = result.Value.Bookings.ConvertAll(mapper.Map<BookingResponse>);
-        return Ok(new ListBookingResponse(responses));
+        var responses = result.Value.ConvertAll(mapper.Map<BookingResponse>);
+        return Ok(responses);
     }
 
-    [HttpGet("user")]
-    public IActionResult GetBookingsByUserId(GetBookingsByUserIdRequest request)
-    {
-        var result = sender.Send(new GetBookingsByUserIdQuery(request.UserId)).Result;
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var responses = result.Value.Bookings.ConvertAll(mapper.Map<BookingResponse>);
-        return Ok(new ListBookingResponse(responses));
-    }
 }

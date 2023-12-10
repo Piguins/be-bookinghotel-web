@@ -22,7 +22,11 @@ public class UserRepository : IUserRepository
         });
 
     public Task DeleteAsync(UserId id) => throw new NotImplementedException();
-    public Task<IEnumerable<User>> GetAllAsync() => throw new NotImplementedException();
+    public Task<IEnumerable<User>> GetAllAsync() =>
+        Task.Run(() =>
+        {
+            return Users.AsEnumerable();
+        });
     public Task<User?> GetByIdAsync(UserId id) =>
         Task.Run(() =>
         {

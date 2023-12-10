@@ -1,14 +1,9 @@
 namespace Domain.Common.Primitives;
 
-public abstract class Entity<TId> : IEquatable<Entity<TId>>
+public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>>
     where TId : ValueObject
 {
-    public Entity(TId id)
-    {
-        Id = id;
-    }
-
-    public TId Id { get; private init; }
+    public TId Id { get; private init; } = id;
 
     public static bool operator ==(Entity<TId>? first, Entity<TId>? second)
     {
