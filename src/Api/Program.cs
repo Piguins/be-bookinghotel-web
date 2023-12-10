@@ -1,5 +1,4 @@
 using Api.Exception;
-using Api.Commons;
 using Application;
 using Infrastructure;
 using Serilog;
@@ -31,13 +30,11 @@ var app = builder.Build();
 
 {
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
     app.Logger.LogInformation("Using Environment: {Environment}", app.Environment.EnvironmentName);
-    app.Logger.LogInformation("Running on Port: {Port}", 5000);
+    app.Logger.LogInformation("Running on Port: {Port}", app.Environment.IsDevelopment() ? 5000 : 8080);
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
     app.UseExceptionHandler("/errors");
