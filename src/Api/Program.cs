@@ -5,6 +5,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 {
     // Add services to the container.
     builder.Services.AddControllers();
@@ -24,18 +25,31 @@ var builder = WebApplication.CreateBuilder(args);
         .UseSerilog(
             (context, configuration) => configuration.ReadFrom.Configuration(context.Configuration)
         );
+    builder
+        .Services
+        .AddCors(options =>
+        {
+            options.AddDefaultPolicy(
+                policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+            );
+        });
 }
 
 var app = builder.Build();
 
+
 {
     // Configure the HTTP request pipeline.
     app.Logger.LogInformation("Using Environment: {Environment}", app.Environment.EnvironmentName);
-    app.Logger.LogInformation("Running on Port: {Port}", app.Environment.IsDevelopment() ? 5000 : 8080);
+    app.Logger.LogInformation(
+        "Running on Port: {Port}",
+        app.Environment.IsDevelopment() ? 5000 : 8080
+    );
 
     app.UseSwagger();
     app.UseSwaggerUI();
 
+    app.UseCors();
     app.UseHttpsRedirection();
     app.UseExceptionHandler("/errors");
     app.UseSerilogRequestLogging();
