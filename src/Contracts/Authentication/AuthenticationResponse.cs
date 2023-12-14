@@ -5,4 +5,5 @@ public record AuthenticationResponse(
     string Email,
     string FirstName,
     string LastName,
+    bool IsHost,
     string Token);

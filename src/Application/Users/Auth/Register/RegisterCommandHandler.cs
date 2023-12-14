@@ -23,6 +23,11 @@ internal sealed class RegisterCommandHandler(
             request.LastName,
             request.Password);
 
+        if (request.IsHost)
+        {
+            user.AddHostRole();
+        }
+
         string token = jwtTokenService.GenerateToken(user);
         await userRepository.AddAsync(user);
 
