@@ -8,7 +8,5 @@ public class ConfirmBookingCommandValidator : AbstractValidator<ConfirmBookingCo
     {
         RuleFor(x => x.BookingId)
             .NotEmpty();
-        RuleFor(x => x.UserId)
-            .NotEmpty();
     }
 }

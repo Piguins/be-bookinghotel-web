@@ -3,7 +3,6 @@ using Application.Rooms.Commands.CreateRoom;
 using Application.Rooms.Commands.DeleteRoom;
 using Application.Rooms.Commands.UpdateRoom;
 using Application.Rooms.Queries.GetAllRoom;
-using Application.Rooms.Queries.GetRoomByRoomTypeId;
 using Contracts.Room;
 using Contracts.Room.Commands;
 using MediatR;
@@ -17,73 +16,57 @@ public class RoomController(ISender sender) : ApiController
     [HttpPost]
     public IActionResult CreateRoom(CreateRoomRequest request)
     {
-        var result = sender.Send(new CreateRoomCommand(request.RoomTypeId, request.Name)).Result;
+        var result = sender.Send(new CreateRoomCommand(
+            request.Name,
+            request.Floor,
+            request.BedCount,
+            request.Amount,
+            request.Currency)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(new RoomResponse(
                     result.Value.Room.Id.Value,
-                    result.Value.Room.RoomTypeId.Value,
+                    result.Value.Room.Name,
                     result.Value.Room.IsReserved,
-                    result.Value.Room.Name));
+                    result.Value.Room.Floor.Name,
+                    result.Value.Room.BedCount,
+                    result.Value.Room.Price.Amount,
+                    result.Value.Room.Price.Currency));
     }
 
     [HttpPut]
     public IActionResult UpdateRoom(UpdateRoomRequest request)
     {
-        var result = sender.Send(new UpdateRoomCommand(request.RoomId, request.RoomTypeId, request.Name, request.IsReserved)).Result;
+        var result = sender.Send(new UpdateRoomCommand(
+                    request.RoomId,
+                    request.Name,
+                    request.IsReserved,
+                    request.Floor,
+                    request.BedCount,
+                    request.Amount,
+                    request.Currency)).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var room = result.Value.Room;
-        var response = new RoomResponse(room.Id.Value, room.RoomTypeId.Value, room.IsReserved, room.Name);
-
-        return Ok(response);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(new RoomResponse(
+                    result.Value.Room.Id.Value,
+                    result.Value.Room.Name,
+                    result.Value.Room.IsReserved,
+                    result.Value.Room.Floor.Name,
+                    result.Value.Room.BedCount,
+                    result.Value.Room.Price.Amount,
+                    result.Value.Room.Price.Currency));
     }
 
-    [HttpDelete]
-    public IActionResult DeleteRoom(DeleteRoomRequest request)
+    [HttpDelete("{roomId}")]
+    public IActionResult DeleteRoom(Guid roomId)
     {
-        var result = sender.Send(new DeleteRoomCommand(request.RoomId)).Result;
+        var result = sender.Send(new DeleteRoomCommand(roomId)).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var room = result.Value.Room;
-        var response = new RoomResponse(room.Id.Value, room.RoomTypeId.Value, room.IsReserved, room.Name);
-
-        return Ok(response);
-    }
-
-    [HttpGet("RoomType/{roomTypeId}")]
-    public IActionResult GetRoomByRoomTypeId(string roomTypeId)
-    {
-        var result = sender.Send(new GetRoomByRoomTypeIdQuery(roomTypeId)).Result;
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var rooms = result.Value.Rooms;
-        var responses = new List<RoomResponse>();
-
-        foreach (var room in rooms)
-        {
-            var response = new RoomResponse(
-            room.Id.Value,
-            room.RoomTypeId.Value,
-            room.IsReserved,
-            room.Name);
-            responses.Add(response);
-        }
-
-        return Ok(responses);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok();
     }
 
     [HttpGet("get-all")]
@@ -104,9 +87,12 @@ public class RoomController(ISender sender) : ApiController
         {
             var response = new RoomResponse(
             room.Id.Value,
-            room.RoomTypeId.Value,
+            room.Name,
             room.IsReserved,
-            room.Name);
+            room.Floor.Name,
+            room.BedCount,
+            room.Price.Amount,
+            room.Price.Currency);
             responses.Add(response);
         }
 

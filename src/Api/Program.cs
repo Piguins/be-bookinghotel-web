@@ -45,6 +45,11 @@ var app = builder.Build();
         "Running on Port: {Port}",
         app.Environment.IsDevelopment() ? 5000 : 8080
     );
+    app.Logger.LogInformation("----Created a default user with \"Host\" and \"Guest\" Role");
+    app.Logger.LogInformation("----Email: {Email}", "host@host.host");
+    app.Logger.LogInformation("----FirstName: {FirstName}", "Host");
+    app.Logger.LogInformation("----LastName: {LastName}", "Host");
+    app.Logger.LogInformation("----Password: {Password}", "host");
 
     app.UseSwagger();
     app.UseSwaggerUI();

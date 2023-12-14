@@ -1,7 +1,6 @@
 ﻿using Application.Rooms;
 using Domain.Room;
 using Domain.Room.ValueObjects;
-using Domain.RoomType.ValueObjects;
 
 namespace Infrastructure.Persistence.Repositories;
 public class RoomRepository : IRoomRepository
@@ -28,12 +27,6 @@ public class RoomRepository : IRoomRepository
     {
         return Rooms.FirstOrDefault(room => room.Id.Equals(id));
     });
-    public Task<List<Room>> GetByRoomTypeIdAsync(Guid roomTypeId) =>
-        Task.Run(() =>
-        {
-            var result = Rooms.FindAll(x => x.RoomTypeId.Equals(RoomTypeId.Create(roomTypeId)));
-            return result;
-        });
     public Task<Room> UpdateAsync(Room aggregate) =>
         Task.Run(() =>
         {

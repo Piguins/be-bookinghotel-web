@@ -2,6 +2,9 @@
 
 public record UpdateRoomRequest(
     Guid RoomId,
-    Guid? RoomTypeId,
+    string? Name,
     bool? IsReserved,
-    string? Name);
+    int? Floor,
+    int? BedCount,
+    decimal? Amount,
+    string? Currency);

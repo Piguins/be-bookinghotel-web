@@ -67,10 +67,10 @@ public class User : AggregateRoot<UserId>
     public static User DefaultHost()
     {
         var user = Create(
-            "host@host.host",
-            "Host",
-            "Host",
-            "host");
+            email: "host@host.host",
+            firstName: "Host",
+            lastName: "Host",
+            password: "host");
         user.AddHostRole();
         return user;
     }

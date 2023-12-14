@@ -1,11 +1,8 @@
-﻿using Application.Abstractions.Mediator;
-
-namespace Application.Bookings.Commands.UpdateBooking;
+﻿namespace Application.Bookings.Commands.UpdateBooking;
 
 public record UpdateBookingCommand(
-    Guid UserId,
     Guid BookingId,
-    Guid RoomTypeId,
-    DateTime FromDate,
-    DateTime ToDate,
-    int RoomCount) : ICommand<BookingResult>;
+    DateTime? FromDate,
+    DateTime? ToDate,
+    int? Floor,
+    int? BedCount) : ICommand<BookingResult>;

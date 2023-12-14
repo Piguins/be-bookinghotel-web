@@ -2,6 +2,9 @@
 
 public record UpdateRoomCommand(
     Guid RoomId,
-    Guid? RoomTypeId,
     string? Name,
-    bool? IsReserved) : ICommand<RoomCommandResult>;
+    bool? IsReserved,
+    int? Floor,
+    int? BedCount,
+    decimal? Amount,
+    string? Currency) : ICommand<RoomCommandResult>;

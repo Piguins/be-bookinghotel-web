@@ -1,5 +1,8 @@
 ﻿namespace Contracts.Room.Commands;
 
 public record CreateRoomRequest(
-    Guid RoomTypeId,
-    string Name);
+    string Name,
+    int Floor,
+    int BedCount,
+    decimal Amount,
+    string Currency);

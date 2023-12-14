@@ -1,6 +1,6 @@
 using Domain.Common.Primitives;
 
-namespace Domain.RoomType.Enums;
+namespace Domain.Common.Enums;
 
 public abstract class Floor : Enumeration<Floor>
 {

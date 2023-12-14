@@ -2,7 +2,10 @@
 
 public record RoomResponse(
     Guid RoomId,
-    Guid RoomTypeId,
+    string Name,
     bool IsReserved,
-    string Name);
+    string Floor,
+    int BedCount,
+    decimal Amount,
+    string Currency);
 

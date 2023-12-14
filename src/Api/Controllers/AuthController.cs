@@ -9,6 +9,7 @@ using Api.Commons;
 namespace Api.Controllers;
 
 [AllowAnonymous]
+[Route("api/[controller]")]
 public class AuthController(ISender sender) : ApiController
 {
     [HttpPost("login")]

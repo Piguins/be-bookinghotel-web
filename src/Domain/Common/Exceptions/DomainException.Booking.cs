@@ -8,5 +8,6 @@ public static partial class DomainException
     {
         public static Error InvalidBookingId => new("Invalid Booking Id", "this booking id doesn't exist");
         public static Error BookingNotFound => new("BookingNotFound", "Booking not found.");
+        public static Error BookingIsCancelled => new("BookingIsCancelled", "Booking is cancelled.");
     }
 }

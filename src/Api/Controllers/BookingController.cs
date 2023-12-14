@@ -8,6 +8,7 @@ using Application.Bookings.Queries.GetBookingsByUserId;
 using AutoMapper;
 using Contracts.Booking;
 using Contracts.Booking.Commands;
+using Infrastructure.Services.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -17,52 +18,52 @@ namespace Api.Controllers;
 public class BookingController(ISender sender, IMapper mapper) : ApiController
 {
     [HttpPost]
+    [Authorize(Policy = nameof(PermissionRequirement.Guest))]
     public IActionResult CreateBooking(CreateBookingRequest request)
     {
         var result = sender.Send(new CreateBookingCommand(
             request.UserId,
-            request.RoomTypeId,
             request.FromDate,
             request.ToDate,
-            request.RoomCount)).Result;
+            request.Floor,
+            request.BedCount)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(mapper.Map<BookingResponse>(result.Value));
     }
 
-    [HttpPut("confirm")]
-    public IActionResult ConfirmBooking(ConfirmBookingRequest request)
+    [HttpPut("{bookingId}/confirm")]
+    public IActionResult ConfirmBooking(Guid bookingId)
     {
-        var result = sender.Send(new ConfirmBookingCommand(
-            request.BookingId,
-            request.UserId)).Result;
+        var result = sender.Send(new ConfirmBookingCommand(bookingId)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(mapper.Map<BookingResponse>(result.Value));
     }
-    [HttpPut("cancel")]
-    public IActionResult CancelBooking(CancelBookingRequest request)
+
+    [HttpPut("{bookingId}/cancel")]
+    [Authorize(Policy = nameof(PermissionRequirement.Guest))]
+    public IActionResult CancelBooking(Guid bookingId)
     {
-        var result = sender.Send(new CancelBookingCommand(
-            request.BookingId,
-            request.UserId)).Result;
+        var result = sender.Send(new CancelBookingCommand(bookingId)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)
             : Ok(mapper.Map<BookingResponse>(result.Value));
     }
-    [HttpPut("update")]
+
+    [HttpPut]
+    [Authorize(Policy = nameof(PermissionRequirement.Guest))]
     public IActionResult UpdateBooking(UpdateBookingRequest request)
     {
         var result = sender.Send(new UpdateBookingCommand(
-            request.UserId,
             request.BookingId,
-            request.RoomTypeId,
             request.FromDate,
             request.ToDate,
-            request.RoomCount)).Result;
+            request.Floor,
+            request.BedCount)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)

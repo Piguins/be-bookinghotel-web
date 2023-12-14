@@ -1,28 +1,35 @@
-﻿using Application.RoomTypes;
+﻿using Domain.Common.Enums;
+using Domain.Common.ValueObjects;
 using Domain.Room;
-using Domain.RoomType.ValueObjects;
 
 namespace Application.Rooms.Commands.CreateRoom;
-internal sealed class CreateRoomCommandHandler(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository) : ICommandHandler<CreateRoomCommand, RoomCommandResult>
+internal sealed class CreateRoomCommandHandler(IRoomRepository roomRepository) : ICommandHandler<CreateRoomCommand, RoomCommandResult>
 {
-    public async Task<Result<RoomCommandResult>> Handle(
+    public Task<Result<RoomCommandResult>> Handle(
         CreateRoomCommand request,
         CancellationToken cancellationToken)
     {
-        if (await roomTypeRepository.GetByIdAsync(RoomTypeId.Create(request.RoomTypeId)) is null)
+        if (Floor.FromValue(request.Floor) is not { } floor)
         {
-            return Result.Failure<RoomCommandResult>(DomainException.RoomType.RoomTypeNotFound);
+            return Task.FromResult(Result.Failure<RoomCommandResult>(DomainException.Room.InvalidFloor));
+        }
+        if (Money.FromCurrency(request.Currency) is not { } price)
+        {
+            return Task.FromResult(Result.Failure<RoomCommandResult>(DomainException.InvalidCurrency));
         }
 
+        price.Add(request.Amount);
         var room = Room.Create(
             request.Name,
             false,
-            request.RoomTypeId);
+            floor,
+            request.BedCount,
+            price);
 
         var add = roomRepository.AddAsync(room);
 
         Task.WaitAll([add], cancellationToken);
 
-        return new RoomCommandResult(add.Result);
+        return Task.FromResult<Result<RoomCommandResult>>(new RoomCommandResult(add.Result));
     }
 }

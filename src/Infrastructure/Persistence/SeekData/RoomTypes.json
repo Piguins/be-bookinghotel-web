@@ -1,13 +1,11 @@
 [
   {
-    "roomTypeId": "19057518-8375-467b-905b-ae60781a02a4",
     "floor": "G",
     "bedCount": 1,
     "amount": 1000000,
     "currency": "VND"
   },
   {
-    "roomTypeId": "19057518-8375-467b-905b-ae60781a02a4",
     "floor": "G",
     "bedCount": 2,
     "amount": 2000000,

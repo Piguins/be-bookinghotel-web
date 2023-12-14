@@ -1,0 +1,16 @@
+[
+  {
+    "email": "host@host.host",
+    "firstName": "Host",
+    "lastName": "Host",
+    "password": "host",
+    "isHost": true
+  },
+  {
+    "email": "guest@guest.guest",
+    "firstName": "Guest",
+    "lastName": "Guest",
+    "password": "guest",
+    "isHost": false
+  }
+]

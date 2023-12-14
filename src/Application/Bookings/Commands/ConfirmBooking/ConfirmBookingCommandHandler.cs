@@ -1,15 +1,11 @@
-﻿using Application.Users;
-using Domain.Booking.Enums;
+﻿using Domain.Booking.Enums;
 using Domain.Booking.ValueObjects;
-using Domain.User.Enums;
-using Domain.User.ValueObjects;
 
 namespace Application.Bookings.Commands.ConfirmBooking;
 
 internal sealed class ConfirmBookingCommandHandler(
     IMapper mapper,
-    IBookingRepository bookingRepository,
-    IUserRepository userRepository) : ICommandHandler<ConfirmBookingCommand, BookingResult>
+    IBookingRepository bookingRepository) : ICommandHandler<ConfirmBookingCommand, BookingResult>
 {
     public async Task<Result<BookingResult>> Handle(ConfirmBookingCommand request, CancellationToken cancellationToken)
     {
@@ -17,20 +13,16 @@ internal sealed class ConfirmBookingCommandHandler(
         {
             return Result.Failure<BookingResult>(DomainException.Booking.InvalidBookingId);
         }
-        if (await userRepository.GetByIdAsync(UserId.Create(request.UserId)) is not { } user)
+        if (booking.BookingStatus == BookingStatus.Cancelled)
         {
-            return Result.Failure<BookingResult>(DomainException.User.UserNotFound);
-        }
-        if (!user.Roles.Contains(Role.Host))
-        {
-            return Result.Failure<BookingResult>(DomainException.User.InvalidCredentials);
+            return Result.Failure<BookingResult>(DomainException.Booking.BookingIsCancelled);
         }
 
         booking.UpdateStatus(BookingStatus.Confirmed);
 
         var confirmAsync = bookingRepository.UpdateAsync(booking);
 
-        Task.WaitAll(new Task[] { confirmAsync },
+        Task.WaitAll([confirmAsync],
                      cancellationToken);
 
         return mapper.Map<BookingResult>(confirmAsync.Result);
