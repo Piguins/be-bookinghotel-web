@@ -2,7 +2,9 @@
 
 public record CreateRoomCommand(
     string Name,
+    string Description,
     int Floor,
     int BedCount,
     decimal Amount,
-    string Currency) : ICommand<RoomCommandResult>;
+    string Currency,
+    ICollection<string> Images) : ICommand<RoomResult>;

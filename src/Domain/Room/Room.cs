@@ -9,9 +9,11 @@ namespace Domain.Room;
 public sealed class Room : AggregateRoot<RoomId>
 {
     private readonly List<RoomRating> _roomRatings = [];
+    private readonly List<string> _images = [];
 
     private Room(RoomId id,
                 string name,
+                string description,
                 bool isReserved,
                 Floor floor,
                 int bedCount,
@@ -22,36 +24,52 @@ public sealed class Room : AggregateRoot<RoomId>
         Floor = floor;
         BedCount = bedCount;
         Price = price;
+        Description = description;
     }
 
     public string Name { get; private set; }
+    public string Description { get; private set; }
     public bool IsReserved { get; private set; }
     public Floor Floor { get; private set; }
     public int BedCount { get; private set; }
     public Money Price { get; private set; }
+
+    public IReadOnlyList<string> Images => _images.ToList();
     public IReadOnlyList<RoomRating> RoomRatings => _roomRatings.ToList();
 
     public static Room Create(
         string name,
+        string description,
         bool isReserved,
         Floor floor,
         int bedCount,
-        Money price) => new(RoomId.NewId,
+        Money price,
+        ICollection<string> images)
+    {
+        var room = new Room(RoomId.NewId,
                             name,
+                            description,
                             isReserved,
                             floor,
                             bedCount,
                             price);
+        room._images.AddRange(images);
+
+        return room;
+    }
 
     public void Update(
         string? name,
+        string? description,
         bool? isReserved,
         Floor? floor,
         int? bedCount,
         decimal? amount,
-        string? currency)
+        string? currency,
+        ICollection<string>? images)
     {
         Name = name ?? Name;
+        Description = description ?? Description;
         IsReserved = isReserved ?? IsReserved;
         Floor = floor ?? Floor;
         BedCount = bedCount ?? BedCount;
@@ -62,6 +80,11 @@ public sealed class Room : AggregateRoot<RoomId>
         if (amount is not null)
         {
             Price = Money.FromCurrency(Price.Currency).Add(amount.Value);
+        }
+        if (images is not null)
+        {
+            _images.Clear();
+            _images.AddRange(images);
         }
     }
 

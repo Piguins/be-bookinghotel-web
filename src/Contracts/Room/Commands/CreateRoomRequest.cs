@@ -2,7 +2,9 @@
 
 public record CreateRoomRequest(
     string Name,
+    string Description,
     int Floor,
     int BedCount,
     decimal Amount,
-    string Currency);
+    string Currency,
+    ICollection<string> Images);

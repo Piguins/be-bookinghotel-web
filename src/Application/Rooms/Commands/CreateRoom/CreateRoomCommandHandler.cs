@@ -3,33 +3,37 @@ using Domain.Common.ValueObjects;
 using Domain.Room;
 
 namespace Application.Rooms.Commands.CreateRoom;
-internal sealed class CreateRoomCommandHandler(IRoomRepository roomRepository) : ICommandHandler<CreateRoomCommand, RoomCommandResult>
+internal sealed class CreateRoomCommandHandler(
+    IRoomRepository roomRepository,
+    IMapper mapper) : ICommandHandler<CreateRoomCommand, RoomResult>
 {
-    public Task<Result<RoomCommandResult>> Handle(
+    public Task<Result<RoomResult>> Handle(
         CreateRoomCommand request,
         CancellationToken cancellationToken)
     {
         if (Floor.FromValue(request.Floor) is not { } floor)
         {
-            return Task.FromResult(Result.Failure<RoomCommandResult>(DomainException.Room.InvalidFloor));
+            return Task.FromResult(Result.Failure<RoomResult>(DomainException.Room.InvalidFloor));
         }
         if (Money.FromCurrency(request.Currency) is not { } price)
         {
-            return Task.FromResult(Result.Failure<RoomCommandResult>(DomainException.InvalidCurrency));
+            return Task.FromResult(Result.Failure<RoomResult>(DomainException.InvalidCurrency));
         }
 
         price.Add(request.Amount);
         var room = Room.Create(
             request.Name,
+            request.Description,
             false,
             floor,
             request.BedCount,
-            price);
+            price,
+            request.Images);
 
         var add = roomRepository.AddAsync(room);
 
         Task.WaitAll([add], cancellationToken);
 
-        return Task.FromResult<Result<RoomCommandResult>>(new RoomCommandResult(add.Result));
+        return Task.FromResult<Result<RoomResult>>(mapper.Map<RoomResult>(add.Result));
     }
 }

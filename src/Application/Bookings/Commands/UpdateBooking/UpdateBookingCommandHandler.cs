@@ -18,6 +18,10 @@ internal sealed class UpdateBookingCommandHandler(
         {
             return Result.Failure<BookingResult>(DomainException.Booking.BookingIsCancelled);
         }
+        if (booking.BookingStatus == BookingStatus.Confirmed)
+        {
+            return Result.Failure<BookingResult>(DomainException.Booking.BookingIsConfirmed);
+        }
 
         booking.Update(
             request.FromDate,

@@ -6,57 +6,58 @@ using Application.Rooms.Queries.GetAllRoom;
 using Contracts.Room;
 using Contracts.Room.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Api.Controllers;
 
-public class RoomController(ISender sender) : ApiController
+public class RoomController(ISender sender, IMapper mapper) : ApiController
 {
     [HttpPost]
     public IActionResult CreateRoom(CreateRoomRequest request)
     {
-        var result = sender.Send(new CreateRoomCommand(
-            request.Name,
-            request.Floor,
-            request.BedCount,
-            request.Amount,
-            request.Currency)).Result;
+        var result = sender
+            .Send(
+                new CreateRoomCommand(
+                    request.Name,
+                    request.Description,
+                    request.Floor,
+                    request.BedCount,
+                    request.Amount,
+                    request.Currency,
+                    request.Images
+                )
+            )
+            .Result;
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok(new RoomResponse(
-                    result.Value.Room.Id.Value,
-                    result.Value.Room.Name,
-                    result.Value.Room.IsReserved,
-                    result.Value.Room.Floor.Name,
-                    result.Value.Room.BedCount,
-                    result.Value.Room.Price.Amount,
-                    result.Value.Room.Price.Currency));
+            : Ok(mapper.Map<RoomResponse>(result.Value));
     }
 
     [HttpPut]
     public IActionResult UpdateRoom(UpdateRoomRequest request)
     {
-        var result = sender.Send(new UpdateRoomCommand(
+        var result = sender
+            .Send(
+                new UpdateRoomCommand(
                     request.RoomId,
                     request.Name,
+                    request.Description,
                     request.IsReserved,
                     request.Floor,
                     request.BedCount,
                     request.Amount,
-                    request.Currency)).Result;
+                    request.Currency,
+                    request.Images
+                )
+            )
+            .Result;
 
         return result.IsFailure
             ? HandleFailure(result)
-            : Ok(new RoomResponse(
-                    result.Value.Room.Id.Value,
-                    result.Value.Room.Name,
-                    result.Value.Room.IsReserved,
-                    result.Value.Room.Floor.Name,
-                    result.Value.Room.BedCount,
-                    result.Value.Room.Price.Amount,
-                    result.Value.Room.Price.Currency));
+            : Ok(mapper.Map<RoomResponse>(result.Value));
     }
 
     [HttpDelete("{roomId}")]
@@ -64,9 +65,7 @@ public class RoomController(ISender sender) : ApiController
     {
         var result = sender.Send(new DeleteRoomCommand(roomId)).Result;
 
-        return result.IsFailure
-            ? HandleFailure(result)
-            : Ok();
+        return result.IsFailure ? HandleFailure(result) : Ok();
     }
 
     [HttpGet("get-all")]
@@ -75,27 +74,8 @@ public class RoomController(ISender sender) : ApiController
     {
         var result = sender.Send(new GetAllRoomQuery()).Result;
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        var rooms = result.Value.Rooms;
-        var responses = new List<RoomResponse>();
-
-        foreach (var room in rooms)
-        {
-            var response = new RoomResponse(
-            room.Id.Value,
-            room.Name,
-            room.IsReserved,
-            room.Floor.Name,
-            room.BedCount,
-            room.Price.Amount,
-            room.Price.Currency);
-            responses.Add(response);
-        }
-
-        return Ok(responses);
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(result.Value.Select(mapper.Map<RoomResponse>));
     }
 }

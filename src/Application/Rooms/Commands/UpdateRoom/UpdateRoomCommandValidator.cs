@@ -9,10 +9,6 @@ public class UpdateRoomCommandValidator : AbstractValidator<UpdateRoomCommand>
     {
         RuleFor(x => x.RoomId)
             .NotEmpty();
-        // RuleFor(x => x.IsReserved)
-        //     .NotEmpty();
-        // RuleFor(x => x.Name)
-        //     .NotEmpty();
         RuleFor(x => x.BedCount)
             .GreaterThan(0);
         RuleFor(x => x.Currency)

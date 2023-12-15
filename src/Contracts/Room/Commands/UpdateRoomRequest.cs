@@ -3,8 +3,10 @@
 public record UpdateRoomRequest(
     Guid RoomId,
     string? Name,
+    string? Description,
     bool? IsReserved,
     int? Floor,
     int? BedCount,
     decimal? Amount,
-    string? Currency);
+    string? Currency,
+    ICollection<string>? Images);

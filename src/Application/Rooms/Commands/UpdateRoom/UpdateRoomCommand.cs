@@ -3,8 +3,10 @@
 public record UpdateRoomCommand(
     Guid RoomId,
     string? Name,
+    string? Description,
     bool? IsReserved,
     int? Floor,
     int? BedCount,
     decimal? Amount,
-    string? Currency) : ICommand<RoomCommandResult>;
+    string? Currency,
+    ICollection<string>? Images) : ICommand<RoomResult>;

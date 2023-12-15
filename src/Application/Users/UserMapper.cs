@@ -10,14 +10,9 @@ public class UserMapper : Profile
     {
         CreateMap<BaseId, Guid>()
             .ConstructUsing(id => id.Value);
-
         CreateMap<Role, RoleResult>()
             .ConstructUsing(role => new RoleResult(role.Name, role.Value));
-
-        CreateMap<User, UserResult>()
-            .ForMember(
-                d => d.Roles,
-                o => o.MapFrom(s => s.Roles));
+        CreateMap<User, UserResult>();
     }
 }
 
