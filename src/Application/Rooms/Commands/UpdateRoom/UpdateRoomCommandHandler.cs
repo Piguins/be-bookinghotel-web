@@ -1,32 +1,33 @@
-﻿using Application.RoomTypes;
+﻿using Domain.Common.Enums;
 using Domain.Room.ValueObjects;
-using Domain.RoomType.ValueObjects;
 
 namespace Application.Rooms.Commands.UpdateRoom;
-internal sealed class UpdateRoomCommandHandler(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository) : ICommandHandler<UpdateRoomCommand, RoomCommandResult>
+internal sealed class UpdateRoomCommandHandler(
+    IRoomRepository roomRepository,
+    IMapper mapper) : ICommandHandler<UpdateRoomCommand, RoomResult>
 {
-    public async Task<Result<RoomCommandResult>> Handle(
+    public async Task<Result<RoomResult>> Handle(
         UpdateRoomCommand request,
         CancellationToken cancellationToken)
     {
         if (await roomRepository.GetByIdAsync(RoomId.Create(request.RoomId)) is not { } room)
         {
-            return Result.Failure<RoomCommandResult>(DomainException.Room.RoomNotFound);
-        }
-        if (request.RoomTypeId.HasValue
-            && await roomTypeRepository.GetByIdAsync(RoomTypeId.Create((Guid)request.RoomTypeId)) is null)
-        {
-            return Result.Failure<RoomCommandResult>(DomainException.RoomType.RoomTypeNotFound);
+            return Result.Failure<RoomResult>(DomainException.Room.RoomNotFound);
         }
 
         room.Update(
             request.Name,
+            request.Description,
             request.IsReserved,
-            !request.RoomTypeId.HasValue ? null : RoomTypeId.Create((Guid)request.RoomTypeId));
+            !request.Floor.HasValue ? null : Floor.FromValue(request.Floor.Value),
+            request.BedCount,
+            request.Amount,
+            request.Currency,
+            request.Images);
         var update = roomRepository.UpdateAsync(room);
 
         Task.WaitAll([update], cancellationToken);
 
-        return new RoomCommandResult(update.Result);
+        return mapper.Map<RoomResult>(update.Result);
     }
 }

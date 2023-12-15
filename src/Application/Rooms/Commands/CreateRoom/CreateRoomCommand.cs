@@ -1,5 +1,10 @@
 ﻿namespace Application.Rooms.Commands.CreateRoom;
 
 public record CreateRoomCommand(
-    Guid RoomTypeId,
-    string Name) : ICommand<RoomCommandResult>;
+    string Name,
+    string Description,
+    int Floor,
+    int BedCount,
+    decimal Amount,
+    string Currency,
+    ICollection<string> Images) : ICommand<RoomResult>;

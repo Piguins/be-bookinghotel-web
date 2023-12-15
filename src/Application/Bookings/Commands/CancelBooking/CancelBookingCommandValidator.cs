@@ -6,8 +6,6 @@ public class CancelBookingCommandValidator : AbstractValidator<CancelBookingComm
 {
     public CancelBookingCommandValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty();
         RuleFor(x => x.BookingId)
             .NotEmpty();
     }

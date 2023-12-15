@@ -1,4 +1,4 @@
 ﻿namespace Application.Rooms.Commands.DeleteRoom;
 
 public record DeleteRoomCommand(
-    Guid RoomId) : ICommand<RoomCommandResult>;
+    Guid RoomId) : ICommand<RoomResult>;

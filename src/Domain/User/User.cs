@@ -36,7 +36,7 @@ public class User : AggregateRoot<UserId>
     public UserInfoId UserInfoId { get; private set; } = null!;
     public IReadOnlyList<Role> Roles => _roles.ToList();
 
-    private void AddHostRole() => _roles.Add(Role.Host);
+    public void AddHostRole() => _roles.Add(Role.Host);
 
     public static User Create(
         string email,
@@ -67,10 +67,10 @@ public class User : AggregateRoot<UserId>
     public static User DefaultHost()
     {
         var user = Create(
-            "host@host.host",
-            "Host",
-            "Host",
-            "host");
+            email: "host@host.host",
+            firstName: "Host",
+            lastName: "Host",
+            password: "host");
         user.AddHostRole();
         return user;
     }

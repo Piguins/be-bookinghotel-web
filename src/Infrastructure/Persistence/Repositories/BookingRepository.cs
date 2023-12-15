@@ -21,7 +21,7 @@ public class BookingRepository : IBookingRepository
     public Task<List<Booking>> GetByUserIdAsync(Guid userId) =>
         Task.Run(() =>
         {
-            var result = Bookings.FindAll(x => x.UserId.Equals(UserId.Create(userId)));
+            var result = Bookings.FindAll(x => x.GuestId.Equals(UserId.Create(userId)));
             return result;
         });
 

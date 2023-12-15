@@ -1,8 +1,13 @@
 ﻿namespace Contracts.Room;
 
 public record RoomResponse(
-    Guid RoomId,
-    Guid RoomTypeId,
+    Guid Id,
+    string Name,
+    string Description,
     bool IsReserved,
-    string Name);
+    string Floor,
+    int BedCount,
+    decimal PriceAmount,
+    string PriceCurrency,
+    ICollection<string> Images);
 

@@ -9,11 +9,11 @@ public class BookingMapper : Profile
         CreateMap<Booking, BookingResult>()
             .ConstructUsing(x => new BookingResult(
                 x.Id.Value,
-                x.UserId.Value,
-                x.RoomTypeId.Value,
+                x.GuestId.Value,
                 x.FromDate,
                 x.ToDate,
-                x.RoomCount,
+                x.Floor.ToString()!,
+                x.BedCount,
                 x.BookingStatus.ToString() ?? string.Empty));
     }
 }

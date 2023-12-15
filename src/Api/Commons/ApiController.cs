@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace Api.Commons;
 
 [ApiController]
-[Route("api/[controller]")]
-// [Authorize(Policy = nameof(PermissionRequirement.Guest))]
+[Route("api/[controller]s")]
+[Authorize(Policy = nameof(PermissionRequirement.Host))]
 public abstract class ApiController : ControllerBase
 {
     protected IActionResult HandleFailure(Result result) =>

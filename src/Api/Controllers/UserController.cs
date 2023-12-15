@@ -9,6 +9,7 @@ using AutoMapper;
 
 namespace Api.Controllers;
 
+[Authorize(Policy = nameof(PermissionRequirement.Guest))]
 public class UserController(ISender sender, IMapper mapper) : ApiController
 {
     [HttpGet("get-all")]

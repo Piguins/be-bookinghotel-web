@@ -1,18 +1,12 @@
 using Application.Users;
 using Domain.User;
 using Domain.User.ValueObjects;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {
     private static readonly List<User> Users = [User.DefaultHost()];
-
-    public UserRepository(ILogger<UserRepository> logger)
-    {
-        logger.LogInformation("Default a host created: {User}", Users.First().Email);
-    }
 
     public Task<User> AddAsync(User aggregate) =>
         Task.Run(() =>

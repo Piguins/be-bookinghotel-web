@@ -31,19 +31,16 @@ public sealed class Money : ValueObject
     {
         if (Amount < amount)
         {
-            throw new Exception("Not enough money");
+            throw new InvalidDataException("Not enough money");
         }
         Amount -= amount;
         return this;
     }
 
-    public static Money FromCurrency(string currency)
+    public static Money FromCurrency(string currency) => currency.ToUpperInvariant() switch
     {
-        return currency.ToUpper() switch
-        {
-            "USD" => Usd,
-            "VND" => Vnd,
-            _ => throw new Exception("Invalid Currency")
-        };
-    }
+        "USD" => Usd,
+        "VND" => Vnd,
+        _ => throw new InvalidDataException("Invalid Currency")
+    };
 }
