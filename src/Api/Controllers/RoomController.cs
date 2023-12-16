@@ -3,6 +3,7 @@ using Application.Rooms.Commands.CreateRoom;
 using Application.Rooms.Commands.DeleteRoom;
 using Application.Rooms.Commands.UpdateRoom;
 using Application.Rooms.Queries.GetAllRoom;
+using Application.Rooms.Queries.GetRoom;
 using Contracts.Room;
 using Contracts.Room.Commands;
 using MediatR;
@@ -65,7 +66,19 @@ public class RoomController(ISender sender, IMapper mapper) : ApiController
     {
         var result = sender.Send(new DeleteRoomCommand(roomId)).Result;
 
-        return result.IsFailure ? HandleFailure(result) : Ok();
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok();
+    }
+
+    [HttpGet("{roomId}")]
+    public IActionResult GetRoom(Guid roomId)
+    {
+        var result = sender.Send(new GetRoomQuery(roomId)).Result;
+
+        return result.IsFailure
+            ? HandleFailure(result)
+            : Ok(mapper.Map<RoomResponse>(result.Value));
     }
 
     [HttpGet("get-all")]
