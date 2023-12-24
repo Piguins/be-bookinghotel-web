@@ -20,6 +20,8 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
 
     public static TEnum? FromName(string name) => Enumerations.Values.FirstOrDefault(e => e.Name == name);
 
+    public static IEnumerable<TEnum> GetValues() => Enumerations.Values;
+
     public bool Equals(Enumeration<TEnum>? other) =>
         other is not null && GetType() == other.GetType() && Value == other.Value;
 
@@ -41,7 +43,7 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
         return fieldsForType.ToDictionary(e => e.Value);
     }
 
-    // #pragma warning disable CS8618
-    //     protected Enumeration() { }
-    // #pragma warning restore CS8618
+#pragma warning disable CS8618
+    protected Enumeration() { }
+#pragma warning restore CS8618
 }

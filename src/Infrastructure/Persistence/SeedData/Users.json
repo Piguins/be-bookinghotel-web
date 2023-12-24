@@ -1,0 +1,23 @@
+[
+  {
+    "Id": "a7f68a61-5a32-4753-b68f-2d4da5340d1b",
+    "Email": "host@host.host",
+    "FirstName": "Host",
+    "LastName": "Host",
+    "Password": "host",
+    "Roles": [
+      "Host",
+      "Guest"
+    ]
+  },
+  {
+    "Id": "6f5f642b-7387-4b96-a0a4-6e46fd3acac6",
+    "Email": "guest@guest.guest",
+    "Password": "guest",
+    "FirstName": "Guest",
+    "LastName": "Guest",
+    "Roles": [
+      "Guest"
+    ]
+  }
+]

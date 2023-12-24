@@ -1,6 +1,8 @@
 using Api.Exception;
 using Application;
 using Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,32 @@ var builder = WebApplication.CreateBuilder(args);
                 policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
             );
         });
+    builder
+        .Services
+        .AddSwaggerGen(option =>
+        {
+            option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            {
+                Name = "Bearer JWT Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+                BearerFormat = "JWT",
+                Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+            });
+            option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }});
+        });
 }
 
 var app = builder.Build();
@@ -45,14 +73,9 @@ var app = builder.Build();
         "Running on Port: {Port}",
         app.Environment.IsDevelopment() ? 5000 : 8080
     );
-    app.Logger.LogInformation("----Created a default user with \"Host\" and \"Guest\" Role");
-    app.Logger.LogInformation("----Email: {Email}", "host@host.host");
-    app.Logger.LogInformation("----FirstName: {FirstName}", "Host");
-    app.Logger.LogInformation("----LastName: {LastName}", "Host");
-    app.Logger.LogInformation("----Password: {Password}", "host");
 
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SE310-BackEnd v1"));
 
     app.UseCors();
     app.UseHttpsRedirection();
@@ -62,6 +85,8 @@ var app = builder.Build();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+    await app.UseSeedDataAsync().ConfigureAwait(false);
 
     app.Run();
 }

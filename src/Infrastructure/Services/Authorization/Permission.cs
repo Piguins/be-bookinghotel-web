@@ -1,19 +1,14 @@
-using Domain.User.Enums;
+using Domain.Users.Enums;
 
 namespace Infrastructure.Services.Authorization;
 
-public abstract class Permission
+public abstract class Permission(List<Role> roles)
 {
-    protected Permission(List<Role> roles)
-    {
-        Roles = roles;
-    }
-
-    public List<Role> Roles { get; }
+    public List<Role> Roles { get; } = roles;
 
     public sealed class HostPermission : Permission
     {
-        public HostPermission() : base([Role.Host]) { }
+        public HostPermission() : base([Role.Host, Role.Guest]) { }
     }
 
     public sealed class GuestPermission : Permission

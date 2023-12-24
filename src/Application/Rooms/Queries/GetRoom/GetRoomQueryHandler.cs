@@ -1,4 +1,4 @@
-﻿using Domain.Room.ValueObjects;
+﻿using Domain.Rooms.ValueObjects;
 
 namespace Application.Rooms.Queries.GetRoom;
 

@@ -1,11 +1,13 @@
 using System.Security.Cryptography;
-using Domain.User;
+using Application.Abstractions.Persistence;
+using Domain.Users;
 
 namespace Application.Users.Auth.Register;
 
 internal sealed class RegisterCommandHandler(
-        IJwtTokenService jwtTokenService,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        IJwtTokenService jwtTokenService)
     : ICommandHandler<RegisterCommand, AuthenticationResult>
 {
     public async Task<Result<AuthenticationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -25,11 +27,12 @@ internal sealed class RegisterCommandHandler(
 
         if (request.IsHost)
         {
-            user.AddHostRole();
+            // user.AddHostRole();
         }
 
         string token = jwtTokenService.GenerateToken(user);
-        await userRepository.AddAsync(user);
+        userRepository.Add(user);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new AuthenticationResult(user, token);
     }

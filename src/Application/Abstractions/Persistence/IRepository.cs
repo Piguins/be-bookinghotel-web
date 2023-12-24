@@ -7,9 +7,9 @@ public interface IRepository<TAggregate, TId>
     where TAggregate : AggregateRoot<TId>
     where TId : BaseId
 {
-    Task<IEnumerable<TAggregate>> GetAllAsync();
-    Task<TAggregate?> GetByIdAsync(TId id);
-    Task<TAggregate> AddAsync(TAggregate aggregate);
-    Task<TAggregate> UpdateAsync(TAggregate aggregate);
-    Task DeleteAsync(TId id);
+    Task<List<TAggregate>> GetAllAsync();
+    Task<TAggregate?> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
+    TAggregate Add(TAggregate aggregate);
+    TAggregate Update(TAggregate aggregate);
+    void Remove(TAggregate aggregate);
 }

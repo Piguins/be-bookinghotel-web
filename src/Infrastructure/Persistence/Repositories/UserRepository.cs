@@ -1,39 +1,42 @@
 using Application.Users;
-using Domain.User;
-using Domain.User.ValueObjects;
+using Domain.Users;
+using Domain.Users.Enums;
+using Domain.Users.ValueObjects;
+using Infrastructure.Persistence.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(ApplicationDbContext dbContext) : Repository<User, UserId>(dbContext), IUserRepository
 {
-    private static readonly List<User> Users = [User.DefaultHost()];
+    public override User Add(User aggregate)
+    {
+        if (dbContext.Roles.FirstOrDefault(x => x.Equals(Role.Guest)) is not { } guestRole)
+        {
+            throw new InvalidOperationException("Customer role not found");
+        }
+        aggregate.Roles.Add(guestRole);
+        dbContext.Users.Add(aggregate);
+        return aggregate;
+    }
 
-    public Task<User> AddAsync(User aggregate) =>
-        Task.Run(() =>
-        {
-            Users.Add(aggregate);
-            return aggregate;
-        });
+    public override Task<List<User>> GetAllAsync() =>
+        dbContext.Users
+            .Include(x => x.Roles)
+            .ToListAsync();
 
-    public Task DeleteAsync(UserId id) => throw new NotImplementedException();
-    public Task<IEnumerable<User>> GetAllAsync() =>
-        Task.Run(() =>
-        {
-            return Users.AsEnumerable();
-        });
-    public Task<User?> GetByIdAsync(UserId id) =>
-        Task.Run(() =>
-        {
-            return Users.FirstOrDefault(user =>
-                user.Id.Equals(id));
-        });
-    public Task<User> UpdateAsync(User aggregate) => throw new NotImplementedException();
+    public override Task<User?> GetByIdAsync(UserId id, CancellationToken cancellationToken = default) =>
+        dbContext.Users
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(user =>
+                user.Id.Equals(id), cancellationToken);
 
     public Task<User?> GetByEmailAsync(string email) =>
-        Task.Run(() =>
-        {
-            return Users.FirstOrDefault(user =>
-                user.Email.Equals(email, StringComparison.Ordinal));
-        });
+        dbContext.Users.FirstOrDefaultAsync(x =>
+            x.Email == email);
 
+    public Task<Role?> GetRoleAsync(Role role) =>
+        dbContext.Roles.FirstOrDefaultAsync(x =>
+            x.Equals(role));
 }
+

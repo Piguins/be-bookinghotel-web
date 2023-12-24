@@ -1,4 +1,5 @@
-using Domain.Booking;
+using Application.Users;
+using Domain.Bookings;
 
 namespace Application.Bookings;
 
@@ -7,14 +8,14 @@ public class BookingMapper : Profile
     public BookingMapper()
     {
         CreateMap<Booking, BookingResult>()
-            .ConstructUsing(x => new BookingResult(
+            .ConstructUsing((x, m) => new BookingResult(
                 x.Id.Value,
-                x.GuestId.Value,
+                x.OrderId.Value,
                 x.FromDate,
                 x.ToDate,
                 x.Floor.ToString()!,
                 x.BedCount,
-                x.BookingStatus.ToString() ?? string.Empty));
+                m.Mapper.Map<UserResult>(x.User)));
     }
 }
 

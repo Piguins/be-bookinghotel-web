@@ -1,39 +1,49 @@
-﻿using Domain.Booking.Enums;
-using Domain.Booking.ValueObjects;
+﻿using Application.Abstractions.Persistence;
+using Application.Rooms;
+using Domain.Bookings.ValueObjects;
 using Domain.Common.Enums;
 
 namespace Application.Bookings.Commands.UpdateBooking;
 
 internal sealed class UpdateBookingCommandHandler(
     IMapper mapper,
+    IUnitOfWork unitOfWork,
+    IRoomRepository roomRepository,
     IBookingRepository bookingRepository) : ICommandHandler<UpdateBookingCommand, BookingResult>
 {
     public async Task<Result<BookingResult>> Handle(UpdateBookingCommand request, CancellationToken cancellationToken)
     {
-        if (await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId)) is not { } booking)
+        if (await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId), cancellationToken) is not { } booking)
         {
             return Result.Failure<BookingResult>(DomainException.Booking.BookingNotFound);
         }
-        if (booking.BookingStatus == BookingStatus.Cancelled)
+        Floor? floor = null;
+        if (request.Floor.HasValue)
         {
-            return Result.Failure<BookingResult>(DomainException.Booking.BookingIsCancelled);
+            if (await roomRepository.GetFloorByIdAsync(request.Floor.Value) is not { } value)
+            {
+                return Result.Failure<BookingResult>(DomainException.Room.InvalidFloor);
+            }
+            floor = value;
         }
-        if (booking.BookingStatus == BookingStatus.Confirmed)
-        {
-            return Result.Failure<BookingResult>(DomainException.Booking.BookingIsConfirmed);
-        }
+        // if (booking.BookingStatus == BookingStatus.Cancelled)
+        // {
+        //     return Result.Failure<BookingResult>(DomainException.Booking.BookingIsCancelled);
+        // }
+        // if (booking.BookingStatus == BookingStatus.Confirmed)
+        // {
+        //     return Result.Failure<BookingResult>(DomainException.Booking.BookingIsConfirmed);
+        // }
 
         booking.Update(
             request.FromDate,
             request.ToDate,
-            !request.Floor.HasValue ? null : Floor.FromValue(request.Floor.Value),
+            request.Floor.HasValue ? floor : null,
             request.BedCount);
 
-        var updateAsync = bookingRepository.UpdateAsync(booking);
+        var update = bookingRepository.Update(booking);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        Task.WaitAll([updateAsync],
-                     cancellationToken);
-
-        return mapper.Map<BookingResult>(updateAsync.Result);
+        return mapper.Map<BookingResult>(update);
     }
 }

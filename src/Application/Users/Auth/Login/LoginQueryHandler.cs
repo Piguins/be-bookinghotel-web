@@ -1,4 +1,4 @@
-using Domain.User;
+using Domain.Users;
 
 namespace Application.Users.Auth.Login;
 
@@ -13,7 +13,7 @@ internal sealed class LoginQueryHandler(
         {
             return Result.Failure<AuthenticationResult>(DomainException.User.UserNotFound);
         }
-        if (!User.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
+        if (!user.VerifyPassword(request.Password))
         {
             return Result.Failure<AuthenticationResult>(DomainException.User.WrongPassword);
         }

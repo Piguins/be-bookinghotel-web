@@ -1,11 +1,9 @@
 using Application.Users;
-using Domain.User;
-using Domain.User.ValueObjects;
+using Domain.Users.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.JsonWebTokens;
-using System.Security.Claims;
+using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Authorization;
 
@@ -14,8 +12,7 @@ public class PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFac
     protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        string? userId = context.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?.Value;
-        if (userId is null || !Guid.TryParse(userId, out var guid))
+        if (context.User.GetUserId() is not { } userId)
         {
             return;
         }
@@ -24,7 +21,7 @@ public class PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFac
         var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<PermissionAuthorizationHandler>>();
 
-        if (await userRepository.GetByIdAsync(UserId.Create(guid)) is not { } user)
+        if (await userRepository.GetByIdAsync(UserId.Create(userId)) is not { } user)
         {
             logger.LogWarning("User with Id {UserId} was not found while trying to access an API with {Role} role.", userId, requirement.Role);
             return;

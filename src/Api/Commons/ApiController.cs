@@ -7,7 +7,7 @@ namespace Api.Commons;
 
 [ApiController]
 [Route("api/[controller]s")]
-[Authorize(Policy = nameof(PermissionRequirement.Host))]
+[Authorize(Policy = nameof(PermissionRequirement.Guest))]
 public abstract class ApiController : ControllerBase
 {
     protected IActionResult HandleFailure(Result result) =>
