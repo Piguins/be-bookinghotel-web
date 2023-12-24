@@ -1,7 +1,8 @@
 using Application.Users.Auth.Login;
 using Application.Users.Auth.Register;
-using Contracts.Authentication;
-using Domain.User.Enums;
+using Contracts.Auth;
+using Contracts.Auth.Requests;
+using Domain.Users.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,7 @@ public class AuthController(ISender sender) : ApiController
             return HandleFailure(result);
         }
 
-        var response = new AuthenticationResponse(
+        var response = new AuthResponse(
             result.Value.User.Id.Value,
             result.Value.User.Email,
             result.Value.User.FirstName,
@@ -53,7 +54,7 @@ public class AuthController(ISender sender) : ApiController
             return HandleFailure(result);
         }
 
-        var response = new AuthenticationResponse(
+        var response = new AuthResponse(
             result.Value.User.Id.Value,
             result.Value.User.Email,
             result.Value.User.FirstName,
@@ -83,7 +84,7 @@ public class AuthController(ISender sender) : ApiController
             return HandleFailure(result);
         }
 
-        var response = new AuthenticationResponse(
+        var response = new AuthResponse(
             result.Value.User.Id.Value,
             result.Value.User.Email,
             result.Value.User.FirstName,

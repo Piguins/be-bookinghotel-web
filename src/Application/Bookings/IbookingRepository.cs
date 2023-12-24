@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Persistence;
-using Domain.Booking;
-using Domain.Booking.ValueObjects;
+using Domain.Bookings;
+using Domain.Bookings.ValueObjects;
 
 namespace Application.Bookings;
 

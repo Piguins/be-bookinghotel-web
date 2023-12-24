@@ -5,7 +5,8 @@ using Application.Rooms.Commands.UpdateRoom;
 using Application.Rooms.Queries.GetAllRoom;
 using Application.Rooms.Queries.GetRoom;
 using Contracts.Room;
-using Contracts.Room.Commands;
+using Contracts.Room.Requests;
+using Infrastructure.Services.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using AutoMapper;
 
 namespace Api.Controllers;
 
+[Authorize(Policy = nameof(PermissionRequirement.Host))]
 public class RoomController(ISender sender, IMapper mapper) : ApiController
 {
     [HttpPost]
@@ -72,6 +74,7 @@ public class RoomController(ISender sender, IMapper mapper) : ApiController
     }
 
     [HttpGet("{roomId}")]
+    [AllowAnonymous]
     public IActionResult GetRoom(Guid roomId)
     {
         var result = sender.Send(new GetRoomQuery(roomId)).Result;
@@ -83,9 +86,11 @@ public class RoomController(ISender sender, IMapper mapper) : ApiController
 
     [HttpGet("get-all")]
     [AllowAnonymous]
-    public IActionResult GetAllRoom()
+    public IActionResult GetAllRoom(
+        decimal minPrice = 0,
+        decimal maxPrice = 0)
     {
-        var result = sender.Send(new GetAllRoomQuery()).Result;
+        var result = sender.Send(new GetAllRoomQuery(minPrice, maxPrice)).Result;
 
         return result.IsFailure
             ? HandleFailure(result)

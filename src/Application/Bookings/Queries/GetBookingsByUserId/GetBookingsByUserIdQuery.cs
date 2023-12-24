@@ -1,3 +1,3 @@
 ﻿namespace Application.Bookings.Queries.GetBookingsByUserId;
 
-public record GetBookingsByUserIdQuery(string UserId) : IQuery<List<BookingResult>>;
+public record GetBookingsByUserIdQuery(Guid UserId) : IQuery<List<BookingResult>>;

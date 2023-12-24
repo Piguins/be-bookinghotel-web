@@ -53,7 +53,7 @@ TestResults/
 # Logs and databases #
 ######################
 *.log
-*.sqlite
+# *.sqlite
 # OS generated files #
 ######################
 .DS_Store?

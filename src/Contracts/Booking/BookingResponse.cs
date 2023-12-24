@@ -3,9 +3,9 @@
 public record BookingResponse(
     Guid Id,
     Guid UserId,
+    Guid OrderId,
     DateTime FromDate,
     DateTime ToDate,
     string Floor,
-    int BedCount,
-    string BookingStatus);
+    int BedCount);
 

@@ -13,8 +13,8 @@ public class UpdateBookingCommandValidator : AbstractValidator<UpdateBookingComm
         // RuleFor(x => x.ToDate)
         //     .NotEmpty();
         RuleFor(x => x.Floor)
-            .GreaterThan(-2)
-            .LessThan(3);
+            .GreaterThan(0)
+            .LessThan(5);
         RuleFor(x => x.BedCount)
             .GreaterThan(0);
     }

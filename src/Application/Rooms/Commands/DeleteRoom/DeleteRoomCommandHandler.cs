@@ -1,24 +1,24 @@
-﻿using Domain.Room.ValueObjects;
+﻿using Application.Abstractions.Persistence;
+using Domain.Rooms.ValueObjects;
 
 namespace Application.Rooms.Commands.DeleteRoom;
 internal sealed class DeleteRoomCommandHandler(
     IRoomRepository roomRepository,
+    IUnitOfWork unitOfWork,
     IMapper mapper) : ICommandHandler<DeleteRoomCommand, RoomResult>
 {
     public async Task<Result<RoomResult>> Handle(
         DeleteRoomCommand request,
         CancellationToken cancellationToken)
     {
-        var room = await roomRepository.GetByIdAsync(RoomId.Create(request.RoomId));
-        if (room is null)
+        if (await roomRepository.GetByIdAsync(RoomId.Create(request.RoomId), cancellationToken) is not { } room)
         {
             return Result.Failure<RoomResult>(DomainException.Room.RoomNotFound);
         }
 
-        var delete = roomRepository.DeleteAsync(room.Id);
+        roomRepository.Remove(room);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        Task.WaitAll([delete], cancellationToken);
-
-        return mapper.Map<RoomResult>(delete);
+        return mapper.Map<RoomResult>(room);
     }
 }

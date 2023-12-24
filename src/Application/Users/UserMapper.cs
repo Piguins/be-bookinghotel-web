@@ -1,5 +1,5 @@
-using Domain.User;
-using Domain.User.Enums;
+using Domain.Users;
+using Domain.Users.Enums;
 using Domain.Common.ValueObjects;
 
 namespace Application.Users;

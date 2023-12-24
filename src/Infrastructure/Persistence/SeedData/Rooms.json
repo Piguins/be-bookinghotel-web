@@ -1,0 +1,30 @@
+[
+  {
+    "Id": "87f935c6-2979-42db-8aeb-9b561ee1e5c7",
+    "Name": "Gawr Gura",
+    "Description": "Gawr Gura's Room",
+    "IsReserved": true,
+    "Floor": "FloorG",
+    "BedCount": 1,
+    "Amount": 1000000,
+    "Currency": "VND",
+    "Images": [
+      "https://vtubernewsdrop.com/content/images/size/w1000/2022/09/Gawr_Gura.png",
+      "https://assets-global.website-files.com/5d7e8885cad5174a2fcb98d7/64ad807714d9999c70f0e563_Gawr%2520Gura.jpeg"
+    ]
+  },
+  {
+    "Id": "52fcca63-19e2-43a9-95a6-2e7361f13c29",
+    "Name": "Shigure UI",
+    "Description": "Shigure UI's Room",
+    "IsReserved": false,
+    "Floor": "Floor1",
+    "BedCount": 2,
+    "Amount": 2000000,
+    "Currency": "VND",
+    "Images": [
+      "https://images-ng.pixai.art/images/orig/51cbde8f-d75b-4b2b-8890-d25acb215c77",
+      "https://images-ng.pixai.art/images/orig/8e26bf01-d416-4ae7-95c3-f065701ec781"
+    ]
+  }
+]

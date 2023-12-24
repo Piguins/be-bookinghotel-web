@@ -1,23 +1,24 @@
-﻿using Domain.Common.Enums;
+﻿using Application.Abstractions.Persistence;
 using Domain.Common.ValueObjects;
-using Domain.Room;
+using Domain.Rooms;
 
 namespace Application.Rooms.Commands.CreateRoom;
 internal sealed class CreateRoomCommandHandler(
     IRoomRepository roomRepository,
+    IUnitOfWork unitOfWork,
     IMapper mapper) : ICommandHandler<CreateRoomCommand, RoomResult>
 {
-    public Task<Result<RoomResult>> Handle(
+    public async Task<Result<RoomResult>> Handle(
         CreateRoomCommand request,
         CancellationToken cancellationToken)
     {
-        if (Floor.FromValue(request.Floor) is not { } floor)
+        if (await roomRepository.GetFloorByIdAsync(request.Floor) is not { } floor)
         {
-            return Task.FromResult(Result.Failure<RoomResult>(DomainException.Room.InvalidFloor));
+            return Result.Failure<RoomResult>(DomainException.Room.InvalidFloor);
         }
         if (Money.FromCurrency(request.Currency) is not { } price)
         {
-            return Task.FromResult(Result.Failure<RoomResult>(DomainException.InvalidCurrency));
+            return Result.Failure<RoomResult>(DomainException.InvalidCurrency);
         }
 
         price.Add(request.Amount);
@@ -30,10 +31,9 @@ internal sealed class CreateRoomCommandHandler(
             price,
             request.Images);
 
-        var add = roomRepository.AddAsync(room);
+        var add = roomRepository.Add(room);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        Task.WaitAll([add], cancellationToken);
-
-        return Task.FromResult<Result<RoomResult>>(mapper.Map<RoomResult>(add.Result));
+        return mapper.Map<RoomResult>(add);
     }
 }

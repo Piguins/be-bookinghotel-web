@@ -1,5 +1,4 @@
-﻿using Domain.Booking.Enums;
-using Domain.Booking.ValueObjects;
+﻿using Domain.Bookings.ValueObjects;
 
 namespace Application.Bookings.Commands.CancelBooking;
 
@@ -9,18 +8,15 @@ internal sealed class CancelBookingCommandHandler(
 {
     public async Task<Result<BookingResult>> Handle(CancelBookingCommand request, CancellationToken cancellationToken)
     {
-        if (await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId)) is not { } booking)
+        if (await bookingRepository.GetByIdAsync(BookingId.Create(request.BookingId), cancellationToken) is not { } booking)
         {
             return Result.Failure<BookingResult>(DomainException.Booking.InvalidBookingId);
         }
 
-        booking.UpdateStatus(BookingStatus.Cancelled);
+        // booking.UpdateStatus(BookingStatus.Cancelled);
 
-        var cancelAsync = bookingRepository.UpdateAsync(booking);
+        var cancel = bookingRepository.Update(booking);
 
-        Task.WaitAll([cancelAsync],
-                     cancellationToken);
-
-        return mapper.Map<BookingResult>(cancelAsync.Result);
+        return mapper.Map<BookingResult>(cancel);
     }
 }
